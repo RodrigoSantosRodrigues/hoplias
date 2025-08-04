@@ -1,0 +1,14 @@
+Formate a resposta da tarefa anterior para o usuário de forma clara, com explicação resumida, dados estruturados e instruções adicionais, se necessário.
+
+Pergunta:
+{{question}}
+
+Resultado bruto:
+{{prev.output}}
+
+Formato final desejado:
+{
+"resumo": "...",
+"dados": {...},
+"instrucao_extra": "..."
+}

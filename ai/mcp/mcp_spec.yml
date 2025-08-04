@@ -1,0 +1,111 @@
+name: "chromosome-analysis-pipeline"
+version: "1.1"
+
+api:
+  endpoint: "/v1/query"
+  methods: ["POST"]
+  auth:
+    required: false
+
+server:
+  port: 8080
+
+memory:
+  enabled: true
+  window: 4
+  strategy: "sliding"
+
+processing:
+  steps:
+    - name: "context-manager"
+      type: "ollama"
+      model: "llava:13b"
+      parameters:
+        temperature: 0.2
+      prompt_template: |
+        Você é o gerenciador de contexto deste assistente.
+
+        Sua tarefa é analisar o histórico da conversa e dizer em que etapa estamos no processo de análise cromossômica.
+
+        Etapas possíveis:
+        - just-text
+        - image-received
+        - segmentation
+        - rotation
+        - classification
+        - idiogram
+
+        Histórico:
+        {{memory}}
+
+        Pergunta atual:
+        {{question}}
+
+        Retorne apenas uma das palavras acima, sem explicações.
+    
+    - name: "entrada"
+      type: "ollama"
+      model: "llava:13b"
+      prompt_file: "/app/prompts/agent-chat-start.txt"
+
+    - name: "verifica-imagem"
+      type: "ollama"
+      model: "llava:13b"
+      when: "{{entrada.output}} == 'image-received'"
+      prompt_file: "/app/prompts/agent-image-verify.txt"
+
+    - name: "aguarda-imagem"
+      when: "{{entrada.output}} == 'just-text'"
+      type: "static"
+      output:
+        resumo: "Nenhuma imagem foi detectada."
+        instrucao_extra: "Por favor, anexe uma imagem de metáfase para iniciarmos a análise cromossômica."
+
+    - name: "detect-intent"
+      type: "ollama"
+      when: "{{verifica-imagem.output}} == 'metafase' or entrada.output == 'just-text'"
+      model: "llava:13b"
+      parameters:
+        temperature: 0.2
+      prompt_file: "/app/prompts/agent-detect-intent.txt"
+
+    - name: "task-segmentation"
+      type: "ollama"
+      when: "{{detect-intent.output}} == 'segmentation'"
+      model: "llava:13b"
+      parameters:
+        temperature: 0.4
+      prompt_file: "/app/prompts/agent-segment-images.txt"
+
+    - name: "task-rotation"
+      type: "ollama"
+      when: "{{detect-intent.output}} == 'rotation'"
+      model: "openhermes:2.5-mistral"
+      parameters:
+        temperature: 0.3
+      prompt_file: "/app/prompts/agent-position-analysis.txt"
+
+    - name: "task-classification"
+      type: "ollama"
+      when: "{{detect-intent.output}} == 'classification'"
+      model: "llava:13b"
+      parameters:
+        temperature: 0.3
+      prompt_file: "/app/prompts/agent-canvas-organizer.txt"
+
+    - name: "task-idiogram"
+      type: "ollama"
+      when: "{{detect-intent.output}} == 'idiogram'"
+      model: "codellama:13b-instruct"
+      parameters:
+        temperature: 0.25
+      prompt_file: "/app/prompts/agent-chart-analysis.txt"
+    
+    - name: "response-formatter"
+      type: "ollama"
+      model: "llava:13b"
+      prompt_file: "/app/prompts/response-formatter.txt"
+
+monitoring:
+  enabled: true
+  port: 9090

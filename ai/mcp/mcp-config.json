@@ -1,0 +1,10 @@
+{
+    "name": "chromosome-analysis-pipeline",
+    "description": "Shared context between agents for coordinating image analysis",
+    "memory": {
+      "type": "redis",
+      "host": "redis",
+      "port": 6379
+    }
+  }
+  

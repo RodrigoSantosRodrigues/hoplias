@@ -1,0 +1,3 @@
+llava:13b
+openhermes:2.5-mistral
+codellama

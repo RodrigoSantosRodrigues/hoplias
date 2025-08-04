@@ -11,6 +11,76 @@ services:
       - custom_network
     restart: unless-stopped
 
+  ollama:
+    container_name: hoplias-ollama
+    build:
+      context: ./ai/ollama
+      dockerfile: Dockerfile
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_MODELS=/root/.ollama
+    networks:
+      - custom_network
+    deploy: &gpu_config
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+          cpus: "0.5"
+          memory: "1G"
+        limits:
+          cpus: "2.0"
+          memory: "4G"
+    restart: unless-stopped
+
+  mcp:
+    container_name: hoplias-mcp
+    build:
+      context: ./ai/mcp
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+      - "6274:6274"  # Inspector
+      - "6277:6277"  # Proxy
+    volumes:
+      - ./ai/prompts:/app/prompts
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - REDIS_HOST=hoplias-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DB=0
+      - ENV=production #${ENV}
+      - FASTMCP_HOST=0.0.0.0
+      - MCP_CONFIG_FILE=/app/mcp_spec.yml
+      - MCP_PROMPTS_DIR=/app/prompts
+      - PYTHONPATH=/app
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      hoplias-redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "2G"
+        reservations:
+          cpus: "0.5"
+          memory: "1G"
+    networks:
+      - custom_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   hoplias-rabbitmq:
     image: rabbitmq:3-management
     container_name: hoplias-rabbitmq
@@ -593,3 +663,5 @@ volumes:
   rabbitmq_data:
   redis_data:
   redisinsight_data:
+  ollama_data:
+  
