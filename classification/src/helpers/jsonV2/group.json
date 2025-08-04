@@ -1,0 +1,62 @@
+{
+    "type": "group",
+    "version": "3.6.6",
+    "originX": "left",
+    "originY": "top",
+    "left": -329.19,
+    "top": 98.86,
+    "width": 18,
+    "height": 57.5,
+    "fill": "rgba(0, 0, 0, 1)",
+    "stroke": "rgba(255, 255, 255, 0)",
+    "strokeWidth": 0,
+    "strokeDashArray": null,
+    "strokeLineCap": "butt",
+    "strokeDashOffset": 0,
+    "strokeLineJoin": "miter",
+    "strokeMiterLimit": 4,
+    "scaleX": 1,
+    "scaleY": 1,
+    "angle": 0,
+    "flipX": false,
+    "flipY": false,
+    "opacity": 1,
+    "shadow": null,
+    "visible": true,
+    "clipTo": null,
+    "fillRule": "nonzero",
+    "paintFirst": "fill",
+    "globalCompositeOperation": "source-over",
+    "transformMatrix": null,
+    "skewX": 0,
+    "skewY": 0,
+    "id": "8c1bf852-db26-406f-af86-0119df89ec67",
+    "name": "New Group",
+    "link": {
+        "enabled": false,
+        "type": "resource",
+        "state": "new",
+        "dashboard": {}
+    },
+    "tooltip": {
+        "enabled": false,
+        "type": "resource",
+        "template": "<div>{{message.name}}</div>"
+    },
+    "animation": {
+        "type": "none",
+        "loop": false,
+        "autoplay": false,
+        "delay": 100,
+        "duration": 1000
+    },
+    "userProperty": {},
+    "trigger": {
+        "enabled": false,
+        "type": "alarm",
+        "script": "return message.value > 0;",
+        "effect": "style"
+    },
+    "editable": true,
+    "objects":[]
+}

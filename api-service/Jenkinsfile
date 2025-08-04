@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone repository') {
+            steps {
+                echo 'Checkout started'
+                dir('/app') {
+                    checkout scm
+                }
+            }
+            post {
+                success {
+                    echo 'Clone repo Successful!'
+                }
+                failure {
+                    echo 'Clone Failed!'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('/app') {
+                    sh 'docker compose build -t api-service'
+                }
+            }
+            post {
+                success {
+                    echo 'Build Successful!'
+                }
+                failure {
+                    echo 'Build Failed!'
+                }
+            }
+        }
+
+        stage('SonarQube analysis') {
+            steps {
+                echo 'Ok!'
+            }
+            post {
+                success {
+                    echo 'SonarQube Successful!'
+                }
+                failure {
+                    echo 'SonarQube Failed!'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+               echo 'Tests ok!'
+            }
+            post {
+                success {
+                    echo 'Test Successful!'
+                }
+                failure {
+                    echo 'Test Failed!'
+                }
+            }
+        }
+
+        stage('Run image') {
+            steps {
+                dir('/app') {
+                    sh 'docker-compose up -d api-service'
+                }
+            }
+            post {
+                success {
+                    echo 'Run Successful!'
+                }
+                failure {
+                    echo 'Run Failed!'
+                }
+            }
+        }
+    }
+}

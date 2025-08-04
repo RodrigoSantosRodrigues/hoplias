@@ -1,0 +1,16 @@
+{
+	"image": {
+		"objects": [{}]
+	},
+	"objects": [
+		{
+			"id": 1,
+			"base64_binary": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAA+CAMAAACSuoITAAAAAXNSR0I...",
+			"base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAA+CAMAAACSuoITAAAAAXNSR0I...",
+			"centromere": {
+					"x": 100,
+					"y":50
+			}
+		}
+	]
+}

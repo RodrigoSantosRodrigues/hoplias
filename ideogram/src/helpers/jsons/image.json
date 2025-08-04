@@ -1,0 +1,69 @@
+{
+  "type": "image",
+  "version": "3.6.3",
+  "originX": "left",
+  "originY": "top",
+  "left": 253.07,
+  "top": 223.72,
+  "width": 57,
+  "height": 104,
+  "fill": "rgba(0, 0, 0, 1)",
+  "stroke": "rgba(255, 255, 255, 0)",
+  "strokeWidth": 0,
+  "strokeDashArray": null,
+  "strokeLineCap": "butt",
+  "strokeDashOffset": 0,
+  "strokeLineJoin": "miter",
+  "strokeMiterLimit": 4,
+  "scaleX": 0.33,
+  "scaleY": 0.33,
+  "angle": 0,
+  "flipX": false,
+  "flipY": false,
+  "opacity": 1,
+  "shadow": null,
+  "visible": true,
+  "clipTo": null,
+  "backgroundColor": "",
+  "fillRule": "nonzero",
+  "paintFirst": "fill",
+  "globalCompositeOperation": "source-over",
+  "transformMatrix": null,
+  "skewX": 0,
+  "skewY": 0,
+  "crossOrigin": "",
+  "cropX": 0,
+  "cropY": 0,
+  "id": "8c1bf852-db26-406f-af86-0119df89ec67",
+  "file": {
+    "uid": "e388a8db-fe72-4fd4-8a8e-b8de1f2c4331"
+  },
+  "src": "",
+  "link": {
+    "enabled": false,
+    "type": "resource",
+    "state": "new",
+    "dashboard": {}
+  },
+  "tooltip": {
+    "enabled": true,
+    "type": "resource",
+    "template": "<div>{{message.name}}</div>"
+  },
+  "animation": {
+    "type": "none",
+    "loop": true,
+    "autoplay": true,
+    "delay": 100,
+    "duration": 1000
+  },
+  "userProperty": {},
+  "trigger": {
+    "enabled": false,
+    "type": "alarm",
+    "script": "return message.value > 0;",
+    "effect": "style"
+  },
+  "editable": true,
+  "filters": []
+}

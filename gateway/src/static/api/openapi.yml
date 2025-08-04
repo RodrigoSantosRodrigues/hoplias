@@ -1,0 +1,641 @@
+openapi: 3.0.0
+info:
+  title: Gateway API Hoplias
+  description: 'Api to request in microsservices Hoplias.'
+  version: 1.0.0
+  termsOfService: 'http://localhost:5001'
+  contact:
+    email: rodrjuniorsantos@gmail.com
+servers:
+  - url: 'http://localhost:5001'
+    description: 'Primary server, e.g. Main (Production) server'
+components:
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: api-token
+paths:
+  /v1/api/accounts/account:
+    post:
+      summary: Create a account
+      tags:
+        - Account
+      requestBody:
+        description: Account Functions
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - "name"
+                - "email"
+                - "password"
+                - "active"
+                - "role"
+              properties: 
+                name: 
+                  type: "string"
+                email: 
+                  type: "string"
+                password: 
+                  type: "string"
+                active: 
+                  type: "boolean"
+                role: 
+                  type: "string"
+      responses:
+        '200':
+          description: Account successfully registered
+        '400':
+          description: Email already exists
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/accounts/account/:
+    get:
+      summary: Gets a account by auth.
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Account
+      responses:
+        '200':
+          description: Data this account successfully
+        '400':
+          description: Account not found
+        '403':
+          description: Permission denied
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/accounts/account/token:
+    post:
+      summary: 'User Login Function In API, return a token API.'
+      tags:
+        - Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: An Access Token API to be used in Hoplias
+        '400':
+          description: Error in request
+        '401':
+          description: Email are not valid
+        '402':
+          description: Password are not valid
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/accounts/entity:
+    post:
+      summary: Create a entity
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Entity
+      requestBody:
+        description: Entity Functions
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - "name"
+                - "document"
+                - "image"
+              properties: 
+                name: 
+                  type: "string"
+                document: 
+                  type: "string"
+                image: 
+                  type: "string"
+      responses:
+        '200':
+          description: Entity successfully registered
+        '400':
+          description: User already exists
+        '401':
+          description: Document already exists
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/accounts/profile:
+    post:
+      summary: Create a profile
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Profile
+      requestBody:
+        description: Profile Functions
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - "career"
+                - "birthDate"
+                - "sex"
+                - "telephone"
+                - "married"
+                - "cpf"
+                - "rg"
+              properties: 
+                career: 
+                  type: "string"
+                birthDate: 
+                  type: "string"
+                sex: 
+                  type: "string"
+                telephone: 
+                  type: "string"
+                married: 
+                  type: "boolean"
+                cpf: 
+                  type: "string"
+                rg: 
+                  type: "string"
+      responses:
+        '200':
+          description: Profile successfully registered
+        '400':
+          description: CPF already exists
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/accounts/address:
+    post:
+      summary: Create a address
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Address
+      requestBody:
+        description: Address Functions
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - "street"
+                - "city"
+                - "zipCode"
+                - "state"
+                - "number"
+              properties: 
+                street: 
+                  type: "string"
+                city: 
+                  type: "string"
+                zipCode: 
+                  type: "string"
+                state: 
+                  type: "string"
+                number: 
+                  type: "string"
+      responses:
+        '200':
+          description: Address successfully registered
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/segmentation/:
+    post:
+      summary: Segmentation chromosomes.
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Segmentation
+      requestBody:
+        description: Segmentation Functions
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: base64   
+      responses:
+        '200':
+          description: Segmentation successfully 
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/segmentation/json:
+    post:
+      summary: Segmentation chromosomes for Hoplias.
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Segmentation
+      requestBody:
+        description: Segmentation Functions
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - "src"
+              properties: 
+                src: 
+                  type: "string"
+      responses:
+        '200':
+          description: Segmentation successfully 
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/classification/centromere:
+    post:
+      summary: Centromere chromosomes for Hoplias.
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Classification
+      requestBody:
+        description: Centromere Function
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - "objects"
+              properties: 
+                objects: 
+                  type: "array"
+                  items: 
+                    type: "object"
+                    required: 
+                      - "src"
+                      - "points"
+                    properties: 
+                      angle: 
+                        type: "number"
+                      backgroundColor: 
+                        type: "string"
+                      cropX: 
+                        type: "number"
+                      cropY: 
+                        type: "number"
+                      crossOrigin: 
+                        type: "string"
+                      file: 
+                        required: 
+                          - "uid"
+                        properties: 
+                          uid: 
+                            type: "string"
+                        type: "object"
+                      fill: 
+                        type: "string"
+                      fillRule: 
+                        type: "string"
+                      filters: 
+                        type: "array"
+                        items: 
+                          type: "string"
+                      flipX: 
+                        type: "boolean"
+                      flipY: 
+                        type: "boolean"
+                      globalCompositeOperation: 
+                        type: "string"
+                      height: 
+                        type: "number"
+                      id: 
+                        type: "string"
+                      layout: 
+                        type: "string"
+                      left: 
+                        type: "number"
+                      link: 
+                        required: []
+                        properties: {}
+                        type: "object"
+                      name: 
+                        type: "string"
+                      opacity: 
+                        type: "number"
+                      originX: 
+                        type: "string"
+                      originY: 
+                        type: "string"
+                      paintFirst: 
+                        type: "string"
+                      scaleX: 
+                        type: "number"
+                      scaleY: 
+                        type: "number"
+                      skewX: 
+                        type: "number"
+                      skewY: 
+                        type: "number"
+                      src: 
+                        type: "string"
+                      strokeDashOffset: 
+                        type: "number"
+                      strokeLineCap: 
+                        type: "string"
+                      strokeLineJoin: 
+                        type: "string"
+                      strokeMiterLimit: 
+                        type: "number"
+                      strokeWidth: 
+                        type: "number"
+                      tooltip: 
+                        required: 
+                          - "enabled"
+                        properties: 
+                          enabled: 
+                            type: "boolean"
+                        type: "object"
+                      top: 
+                        type: "number"
+                      type: 
+                        type: "string"
+                      version: 
+                        type: "string"
+                      visible: 
+                        type: "boolean"
+                      width: 
+                        type: "number"
+                      workareaHeight: 
+                        type: "number"
+                      workareaWidth: 
+                        type: "number"
+                      animation: 
+                        required: 
+                          - "autoplay"
+                          - "delay"
+                          - "duration"
+                          - "loop"
+                          - "type"
+                        properties: 
+                          autoplay: 
+                            type: "boolean"
+                          delay: 
+                            type: "number"
+                          duration: 
+                            type: "number"
+                          loop: 
+                            type: "boolean"
+                          type: 
+                            type: "string"
+                        type: "object"
+                      editable: 
+                        type: "boolean"
+                      points: 
+                        type: "array"
+                        items: 
+                          type: "object"
+                          properties: 
+                            x: 
+                              type: "number"
+                            y: 
+                              type: "number"
+                      trigger: 
+                        required: 
+                          - "effect"
+                          - "enabled"
+                          - "script"
+                          - "type"
+                        properties: 
+                          effect: 
+                            type: "string"
+                          enabled: 
+                            type: "boolean"
+                          script: 
+                            type: "string"
+                          type: 
+                            type: "string"
+                        type: "object"
+                      userProperty: 
+                        required: []
+                        properties: {}
+                        type: "object"
+      responses:
+        '200':
+          description: Centromere search successfully 
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+  /v1/api/classification/classification:
+    post:
+      summary: Classification chromosomes for Hoplias.
+      security:
+        - APIKeyHeader: []
+      tags:
+        - Classification
+      requestBody:
+        description: Classification Function
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - "objects"
+              properties: 
+                objects: 
+                  type: "array"
+                  items: 
+                    type: "object"
+                    required: 
+                      - "src"
+                      - "points"
+                    properties: 
+                      angle: 
+                        type: "number"
+                      backgroundColor: 
+                        type: "string"
+                      cropX: 
+                        type: "number"
+                      cropY: 
+                        type: "number"
+                      crossOrigin: 
+                        type: "string"
+                      file: 
+                        required: 
+                          - "uid"
+                        properties: 
+                          uid: 
+                            type: "string"
+                        type: "object"
+                      fill: 
+                        type: "string"
+                      fillRule: 
+                        type: "string"
+                      filters: 
+                        type: "array"
+                        items: 
+                          type: "string"
+                      flipX: 
+                        type: "boolean"
+                      flipY: 
+                        type: "boolean"
+                      globalCompositeOperation: 
+                        type: "string"
+                      height: 
+                        type: "number"
+                      id: 
+                        type: "string"
+                      layout: 
+                        type: "string"
+                      left: 
+                        type: "number"
+                      link: 
+                        required: []
+                        properties: {}
+                        type: "object"
+                      name: 
+                        type: "string"
+                      opacity: 
+                        type: "number"
+                      originX: 
+                        type: "string"
+                      originY: 
+                        type: "string"
+                      paintFirst: 
+                        type: "string"
+                      scaleX: 
+                        type: "number"
+                      scaleY: 
+                        type: "number"
+                      skewX: 
+                        type: "number"
+                      skewY: 
+                        type: "number"
+                      src: 
+                        type: "string"
+                      strokeDashOffset: 
+                        type: "number"
+                      strokeLineCap: 
+                        type: "string"
+                      strokeLineJoin: 
+                        type: "string"
+                      strokeMiterLimit: 
+                        type: "number"
+                      strokeWidth: 
+                        type: "number"
+                      tooltip: 
+                        required: 
+                          - "enabled"
+                        properties: 
+                          enabled: 
+                            type: "boolean"
+                        type: "object"
+                      top: 
+                        type: "number"
+                      type: 
+                        type: "string"
+                      version: 
+                        type: "string"
+                      visible: 
+                        type: "boolean"
+                      width: 
+                        type: "number"
+                      workareaHeight: 
+                        type: "number"
+                      workareaWidth: 
+                        type: "number"
+                      animation: 
+                        required: 
+                          - "autoplay"
+                          - "delay"
+                          - "duration"
+                          - "loop"
+                          - "type"
+                        properties: 
+                          autoplay: 
+                            type: "boolean"
+                          delay: 
+                            type: "number"
+                          duration: 
+                            type: "number"
+                          loop: 
+                            type: "boolean"
+                          type: 
+                            type: "string"
+                        type: "object"
+                      editable: 
+                        type: "boolean"
+                      points: 
+                        type: "array"
+                        items: 
+                          type: "object"
+                          properties: 
+                            x: 
+                              type: "number"
+                            y: 
+                              type: "number"
+                      trigger: 
+                        required: 
+                          - "effect"
+                          - "enabled"
+                          - "script"
+                          - "type"
+                        properties: 
+                          effect: 
+                            type: "string"
+                          enabled: 
+                            type: "boolean"
+                          script: 
+                            type: "string"
+                          type: 
+                            type: "string"
+                        type: "object"
+                      userProperty: 
+                        required: []
+                        properties: {}
+                        type: "object"
+      responses:
+        '200':
+          description: Centromere search successfully 
+        '500':
+          description: Gateway internal error
+        '501':
+          description: Service internal error
+tags:
+  - name: Account
+    description: Create account
+  - name: Entity
+    description: Create entity
+  - name: Profile
+    description: Create profile
+  - name: Address
+    description: Create Address
+  - name: Segmentation
+    description: Segmentation metaphases  
+  - name: Classification
+    description: Classifying metaphases  

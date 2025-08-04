@@ -1,0 +1,14 @@
+#chrom  chromStart  chromEnd    species    population  color
+chr1    65000         150000    Astyanax   fasciatus   black
+chr1    150000        750000    Astyanax   fasciatus   red
+chr1    750000        1300000   Astyanax   fasciatus   black
+chr1    1300000       1500000   Astyanax   fasciatus   blue
+chr2    90000         215000    Astyanax   paranae     black
+chr2    215000        950000    Astyanax   paranae     red
+chr2    950000        1500000   Astyanax   paranae     black
+chr3    60000         153000    Astyanax   rivularis   black
+chr3    153000        445000    Astyanax   rivularis   red
+chr3    445000        545000    Astyanax   rivularis   orange
+chr3    545000        1400000   Astyanax   rivularis   black
+chr4    83000         280000    Astyanax   paranae     black
+chr4    280000        700000    Astyanax   paranae     red

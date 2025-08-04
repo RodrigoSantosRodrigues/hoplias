@@ -1,0 +1,20 @@
+from fastapi.openapi.utils import get_openapi
+
+
+def open_api(app):
+  def custom_openapi():
+    if app.openapi_schema:
+      return app.openapi_schema
+    openapi_schema = get_openapi(
+      title="API Service hoplias",
+      version="1.0.0",
+      description="This is a very custom for hoplias",
+      routes=app.routes,
+    )
+    openapi_schema["info"]["x-logo"] = {
+      "url": 'https://apidev.hoplias.com.br/static/images/Logo-1.png'
+    }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+  return custom_openapi

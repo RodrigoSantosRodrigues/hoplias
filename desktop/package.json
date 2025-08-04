@@ -1,0 +1,24 @@
+{
+    "name": "hoplias-desktop",
+    "main": "src/app.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder"
+    },
+    "build": {
+        "appId": "hpl",
+        "productName": "Hoplias",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "**/*"
+        ],
+        "mac": { "target": "dmg" },
+        "win": { "target": "nsis" },
+        "linux": { "target": "app" }
+    },
+    "dependencies": {
+        "electron": "^29.0.0"
+    }
+}

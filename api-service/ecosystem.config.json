@@ -1,0 +1,12 @@
+{
+  "apps": [{
+      "name": "hoplias-api-service",
+      "script": "/root/hoplias/api-service/run.py",
+      "instances": 1,
+      "watch": true,
+      "wait_ready": true,
+      "autorestart": true,
+      "max_restarts": 50,
+      "interpreter" : "/root/.local/share/virtualenvs/api-service-pEbUt92U/bin/python3"
+  }]
+ }

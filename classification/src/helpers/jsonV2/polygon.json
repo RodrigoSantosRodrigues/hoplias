@@ -1,0 +1,66 @@
+{
+    "type": "polygon",
+    "version": "3.6.6",
+    "originX": "left",
+    "originY": "top",
+    "left": 444.49,
+    "top": -196.37,
+    "width": 399.88,
+    "height": 249.84,
+    "fill": "transparent",
+    "stroke": "rgba(0,255,0,1)",
+    "strokeWidth": 0.5,
+    "strokeDashArray": null,
+    "strokeLineCap": "butt",
+    "strokeDashOffset": 0,
+    "strokeLineJoin": "miter",
+    "strokeMiterLimit": 4,
+    "objectCaching": false,
+    "scaleX": 1,
+    "scaleY": 1,
+    "angle": 0,
+    "flipX": false,
+    "flipY": false,
+    "opacity": 1,
+    "shadow": null,
+    "visible": true,
+    "clipTo": null,
+    "backgroundColor": "",
+    "fillRule": "",
+    "paintFirst": "",
+    "globalCompositeOperation": "source-over",
+    "transformMatrix": null,
+    "skewX": 0,
+    "skewY": 0,
+    "id": "87857b92-dee6-4dd1-9acf-569637fc29e0",
+    "name": "New polygon",
+    "link": {
+        "enabled": false,
+        "type": "resource",
+        "state": "new",
+        "dashboard": {}
+    },
+    "tooltip": {
+        "enabled": false,
+        "type": "resource",
+        "template": "<div>{{message.name}}</div>"
+    },
+    "animation": {
+        "type": "none",
+        "loop": true,
+        "autoplay": true,
+        "delay": 100,
+        "duration": 1000
+    },
+    "userProperty": {},
+    "trigger": {
+        "enabled": false,
+        "type": "alarm",
+        "script": "return message.value > 0;",
+        "effect": "style"
+    },
+    "superType": "drawing",
+    "points": [
+    ],
+    "editable": true
+}

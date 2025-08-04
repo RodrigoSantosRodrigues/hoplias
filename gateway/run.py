@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+# encoding: utf-8
+# /run.py
+"""
+                    Run project in development
+    ------------------------------------------------------------------------
+                        Initialize server development
+                  Obs: Do not use in production environment
+    ------------------------------------------------------------------------
+    
+"""
+import os
+from dotenv import load_dotenv, find_dotenv
+
+from src.app import create_app
+
+load_dotenv(find_dotenv())
+
+env_name = os.getenv('FLASK_ENV')
+app = create_app(env_name)
+
+if __name__ == '__main__':
+  port = os.getenv('APP_PORT')
+  # run app
+  app.run(host='0.0.0.0', port=port)

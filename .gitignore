@@ -1,0 +1,57 @@
+.coverage
+*.pyc
+_py_cache
+docs/build
+certs
+.webm
+
+## Packages
+*.egg-info
+dist
+.tox
+.env
+.env.example
+
+## flask python
+.DS_Store
+.env
+.flaskenv
+*.pyc
+*.pyo
+env/
+dist/
+build/
+*.egg
+*.egg-info/
+_mailinglist
+.tox/
+.cache/
+.pytest_cache/
+.idea/
+docs/_build/
+.vscode
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+*,cover
+
+# Dependency directories
+node_modules/
+dist/
+lib/
+.vscode/
+
+package-lock.json
+
+tmp
+tmp/
+
+__pycache__
+
+nginx.conf
+
+docker-compose-prd.yml
+docker-compose-hydro.yml
+docker-compose-hydro-less.yml
