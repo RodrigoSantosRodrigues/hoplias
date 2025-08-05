@@ -1,0 +1,29 @@
+directories:
+  output: dist
+  buildResources: assets
+appId: com.hoplias.desktop
+productName: Hoplias gui
+files:
+  - "src/**/*"
+  - "assets/**/*"
+  - "public/**/*"
+  - "package.json"
+extends: null
+asar: true
+extraResources:
+  - from: public
+    to: public
+win:
+  target: nsis
+  icon: public/assets/icons/icon.ico
+mac:
+  target: zip
+  icon: public/assets/icons/icon.icns
+extraMetadata:
+  main: dist/main.js
+linux:
+  target: AppImage
+  category: Science
+  icon: public/assets/icons/256x256.png
+  maintainer: rodrjuniorsantos@gmail.com
+electronVersion: 29.4.6

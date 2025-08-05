@@ -19,8 +19,6 @@ dist
 *.pyc
 *.pyo
 env/
-dist/
-build/
 *.egg
 *.egg-info/
 _mailinglist
@@ -39,7 +37,6 @@ htmlcov/
 
 # Dependency directories
 node_modules/
-dist/
 lib/
 .vscode/
 

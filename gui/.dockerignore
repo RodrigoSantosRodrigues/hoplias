@@ -1,0 +1,12 @@
+node_modules
+build
+dist
+dist_win
+dist_linux
+dist_mac
+
+.spec
+.git
+.cache
+.vscode
+.DS_Store
