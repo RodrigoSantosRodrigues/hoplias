@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-#/src/helpers/CallQueue.py
 """
-                        API Gateway
-    ------------------------------------------------------------------------
-                           Publisher
     ------------------------------------------------------------------------
          Sends a message to a queue without waiting for a response (Publish-Subscribe)
     

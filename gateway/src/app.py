@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 # src/app.py
 """
-                    API Gateway MicroServices
+                    API RPC Gateway MicroServices
     ------------------------------------------------------------------------
-                        Create app with Prometheus metrics
-    ------------------------------------------------------------------------
+
 
 """
 from flask import Flask, render_template

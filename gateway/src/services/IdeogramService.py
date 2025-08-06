@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-#/src/controllers/ClassificationService.py
 """
-  ------------------------------------------------------------------------
-                      Service Classification
-  ------------------------------------------------------------------------
 """
 import numpy
 import cv2

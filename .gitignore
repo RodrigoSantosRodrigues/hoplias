@@ -11,6 +11,7 @@ dist
 .tox
 .env
 .env.example
+.env-dev
 
 ## flask python
 .DS_Store
@@ -48,6 +49,8 @@ tmp/
 __pycache__
 
 nginx.conf
+nginx-dev.conf
+nginx-less.conf
 
 docker-compose-prd.yml
 docker-compose-hydro.yml

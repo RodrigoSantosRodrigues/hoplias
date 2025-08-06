@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-#/src/helpers/CallApiProxy.py
 """
-                        API Gateway
-    ------------------------------------------------------------------------
-                           HTTP API Proxy
-    ------------------------------------------------------------------------
-         Sends a request to an external API, acting as a proxy
+
 """
 import logging
 import httpx
@@ -18,7 +13,7 @@ class ApiAiProxy:
       self.__endpoints_map = {
         RoutePathApiAiWithProxy.CATEGORY_SUGESTION: RoutePathApiAi.CATEGORY_SUGESTION
       }
-      self.__headers = { 'api-token': 'htj_5y2LF4Q8z\tyusdfdfd/4589' }
+      self.__headers = { 'api-token': '' }
 
     def get_endpoints(self):
       return self.__endpoints_map
