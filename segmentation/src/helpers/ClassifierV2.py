@@ -24,8 +24,7 @@ class ClassifierV2:
 		self.Ftest = np.array([])
 		self.path_matrix = 'src//helpers//features//v2'
 		self.objects = np.array([])
-		self.model_path = 'src//helpers//svm_model//image-best-seg-model-animals-pipeline_V2_balanced.pkl'
-		self.scaler_path = 'src//helpers/svm_model//best-seg-scaler-animals-f023-py-11.1.pkl'
+		self.model_path = 'src//helpers//svm_model//HOPLIAS_TOOLKIT_GEN_SEG_CROM_V1.0.0_ALPHA.pkl'
 		self.logger = logger
 
 	def extract(self):

@@ -325,6 +325,7 @@ services:
     container_name: graylog
     image: graylog/graylog:4.3
     environment:
+      - GRAYLOG_ROOT_USERNAME=${GRAYLOG_ROOT_USERNAME}
       - GRAYLOG_HOST=graylog
       - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD}
       - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_PASSWORD_SHA}
