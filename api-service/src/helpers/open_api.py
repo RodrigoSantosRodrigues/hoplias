@@ -7,12 +7,12 @@ def open_api(app):
       return app.openapi_schema
     openapi_schema = get_openapi(
       title="API Service hoplias",
-      version="1.0.0",
+      version="1.0.0-alpha",
       description="This is a very custom for hoplias",
       routes=app.routes,
     )
     openapi_schema["info"]["x-logo"] = {
-      "url": 'https://apidev.hoplias.com.br/static/images/Logo-1.png'
+      "url": 'https://eloquent-monstera-5ebcf7.netlify.app/static/media/logo-new.db3de9fe.png'
     }
     app.openapi_schema = openapi_schema
     return app.openapi_schema

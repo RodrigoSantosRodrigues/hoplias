@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 #/src/helpers/CallRpc.py
 """
-                        API gateway
-    ------------------------------------------------------------------------
-                           RPC
-    ------------------------------------------------------------------------
-         Sends a request RPC (Remote procedure call) 
     
 """
 import logging

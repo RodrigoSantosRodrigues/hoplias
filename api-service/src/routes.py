@@ -22,11 +22,11 @@ api_router.include_router(
   tags=["User"]
 )
 
-api_router.include_router(
-  specie_controller.router,
-  prefix="/specie",
-  tags=["Specie"]
-)
+# api_router.include_router(
+#   specie_controller.router,
+#   prefix="/specie",
+#   tags=["Specie"]
+# )
 
 api_router.include_router(
   kariotype_controller.router,
@@ -34,17 +34,17 @@ api_router.include_router(
   tags=["Kariotype"]
 )
 
-api_router.include_router(
-  address_controller.router,
-  prefix="/address",
-  tags=["Address"]
-)
+# api_router.include_router(
+#   address_controller.router,
+#   prefix="/address",
+#   tags=["Address"]
+# )
 
-api_router.include_router(
-  team_controller.router,
-  prefix="/team",
-  tags=["Team"]
-)
+# api_router.include_router(
+#   team_controller.router,
+#   prefix="/team",
+#   tags=["Team"]
+# )
 
 api_router.include_router(
   ideogram_controller.router,
@@ -52,11 +52,11 @@ api_router.include_router(
   tags=["Ideogram"]
 )
 
-api_router.include_router(
-  folder_controller.router,
-  prefix="/folder",
-  tags=["Folder"]
-)
+# api_router.include_router(
+#   folder_controller.router,
+#   prefix="/folder",
+#   tags=["Folder"]
+# )
 
 api_router.include_router(
   invitation_controller.router,
@@ -76,8 +76,8 @@ api_router.include_router(
   tags=["Process CNN ML"]
 )
 
-api_router.include_router(
-  proxyai_controller.router,
-  prefix="/tools-ai",
-  tags=["Use tools AI"]
-)
+# api_router.include_router(
+#   proxyai_controller.router,
+#   prefix="/tools-ai",
+#   tags=["Use tools AI"]
+# )

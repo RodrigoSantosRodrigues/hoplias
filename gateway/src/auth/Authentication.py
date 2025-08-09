@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 #src/auth/Authentication
 """
-    ------------------------------------------------------------------------
-                        Auth
-    ------------------------------------------------------------------------
 """
 import jwt
 import os
@@ -42,7 +39,7 @@ class Auth():
     """
     re = {'data': {}, 'error': {}}
     try:
-      if token == 'htj_5y2LF4Q8z\tyusdfdfd/4589':
+      if token == os.getenv('RPC_GATEWAY_KEY'):
         re['data'] = {'user_id': 'api-service'}
       else:
         re['error'] = {'message': 'token invalid, please!'}
