@@ -11,6 +11,7 @@ dist
 .tox
 .env
 .env.example
+.env-dev
 
 ## flask python
 .DS_Store
@@ -19,8 +20,6 @@ dist
 *.pyc
 *.pyo
 env/
-dist/
-build/
 *.egg
 *.egg-info/
 _mailinglist
@@ -39,7 +38,6 @@ htmlcov/
 
 # Dependency directories
 node_modules/
-dist/
 lib/
 .vscode/
 
@@ -51,6 +49,8 @@ tmp/
 __pycache__
 
 nginx.conf
+nginx-dev.conf
+nginx-less.conf
 
 docker-compose-prd.yml
 docker-compose-hydro.yml

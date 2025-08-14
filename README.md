@@ -1,6 +1,38 @@
-# 📝 Latest Release – Hoplias v1.0.0
+#  Hoplias v1.0.0 alpha
 
-**Codename:** *Hoplias – WEB TOOLKIT FOR AUTOMATED KARYOTYPE ASSEMBLY AND CHROMOSOMAL ANALYSIS*
+<p align="left">
+  <img src="./gui/public/assets/logo-hoplias-orange.png" alt="Hoplias Logo" width="100"/>
+</p>
+
+*Hoplias - Web Toolkit For Automated Kariotype Assembly and Chromosomal Analysis*
+
+###### CDN gui status ####
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1f67827d-95c4-49a1-831d-edf5e2c2eb01/deploy-status)](https://app.netlify.com/projects/eloquent-monstera-5ebcf7/deploys)
+
+<p align="center">
+  <a href="https://hoplias.com" target="_blank">
+    <img src="./gui/public/assets/home-desktop.PNG" alt="Home page" width="600"/>
+    <br/>
+    <b>🔗 hoplias.com</b>
+  </a>
+</p>
+
+
+## Downloads
+
+[![Windows](https://img.shields.io/badge/Windows-Download-blue?style=for-the-badge&logo=windows)](./gui/dist_win/Hoplias%20gui%20Setup%201.0.0-alpha.exe)
+[![macOS](https://img.shields.io/badge/macOS-Download-silver?style=for-the-badge&logo=apple)](./gui/dist_mac/Hoplias%20gui-1.0.0-alpha-mac.zip)
+[![Linux](https://img.shields.io/badge/Linux-Download-orange?style=for-the-badge&logo=linux)](./gui/dist_linux/hoplias-gui_1.0.0-alpha_amd64.AppImage)
+
+
+### Specific versions
+| Plataforma     | Arquivo    | Download                                                                                      |
+|----------------|------------|-----------------------------------------------------------------------------------------------|
+| Windows .exe   | Installer  | [Hoplias gui Setup 1.0.0-alpha.exe](./gui/dist_win/Hoplias%20gui%20Setup%201.0.0-alpha.exe)   |
+| macOS  .zip    | Zip        | [Hoplias gui-1.0.0-alpha-mac.zip](./gui/dist_mac/Hoplias%20gui-1.0.0-alpha-mac.zip)           |
+| Linux .deb     | AppImage   | [hoplias-gui_1.0.0-alpha_amd64.de](./gui/dist_linux/hoplias-gui_1.0.0-alpha_amd64.deb)        |
+| Linux  .tar    | AppImage   | [hoplias-gui-1.0.0-alpha.tar.xz](./gui/dist_linux/hoplias-gui-1.0.0-alpha.tar.xz)             |
+
 
 ---
 
@@ -127,15 +159,36 @@ The following are the scientific articles used as a basis for the development of
 ---
 
 
-# Development environment
-1. run comand `chmod +x .devcontainer/postCreateCommand.sh`
+## Development mode
+## 🛠️ Development Guide
 
-2. for starting all services containers: `./start_hoplias.sh`
+### Quick Start
+1. Read our [Project Overview](./docs/PROJECT_OVERVIEW.md)
+2. Check the [Development Setup Guide](./docs/DEVELOPMENT_SETUP.md)
+3. Review [Code Standards](./docs/templates/CODE_STANDARDS.md)
+
+### Contributing
+1. 📋 [Contributing Guidelines](./docs/CONTRIBUTING.md)
+2. 🔄 [Git Workflow](./docs/templates/CONVETIONAL_COMMITS.md)
+3. 📝 [Pull Request Template](./.github/PULL_REQUEST_TEMPLATE.md)
+
+### Microservices Documentation
+Each service has its own setup and guidelines:
+
+- 🖥️ [GUI Service](./gui/README.md)
+- 🎯 [Core Service](./core/README.md)
+- 📦 [API Service](./api/README.md)
+
+### Additional Resources
+- 📚 [API Documentation](./docs/API.md)
+- 🧪 [Testing Guide](./docs/TESTING.md)
+- 🚀 [Deployment Guide](./docs/DEPLOYMENT.md)
 
 
-# Deploying in Dockerhub
-1. Login in docker hub: comand `docker`
-1. run comand for generate image `docker compose up -d --build`
-2. next comand `docker tag minha-imagem:latest seu-usuario-dockerhub/minha-imagem:latest`
+### Starting projet
+1. 🚀 Install docker
+2. ✅ run comand `./stat_hoplias.sh`
+
+❤️ Enjoy
 
 ✅ **End of Document**

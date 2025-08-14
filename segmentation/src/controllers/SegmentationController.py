@@ -23,7 +23,7 @@ class SegmentationController:
     self.data = data
     self.image_base64 = data.get('src')
     image_b64 = self.image_base64.split(",")[1]
-    self.logger.info(f"Loading image from base64: {image_b64}")
+    #self.logger.info(f"Loading image from base64: {image_b64}")
     binary = base64.b64decode(image_b64)
     image = np.asarray(bytearray(binary), dtype="uint8")
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)

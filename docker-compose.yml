@@ -99,11 +99,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.6"           # Limita a 60% de 1 CPU
-          memory: "512M"        # Limita a 512MB de RAM
+          cpus: "0.6"
+          memory: "512M"
         reservations:
-          cpus: "0.15"          # Reserva 25% de 1 CPU
-          memory: "156M"        # Reserva 256MB de RAM
+          cpus: "0.15"
+          memory: "156M"
 
   hoplias-redis:
     image: redis:7-alpine
@@ -148,8 +148,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.6" # Limita a 60% de 1 CPU
-          memory: "800M" # Limita a 512MB de RAM
+          cpus: "0.6"
+          memory: "800M"
     environment:
       - DEBUG=1
       - LOGLEVEL=DEBUG
@@ -224,8 +224,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2.0" # Limita a 2 CPU
-          memory: "2G" # Limita a 812MB de RAM
+          cpus: "1.0"
+          memory: "1G"
     networks:
       - custom_network
     command: bash -c 'while !</dev/tcp/hoplias-rabbitmq/5672; do sleep 1; done; watchmedo auto-restart --pattern="*.py" --recursive -- nameko run --config config.yml src.service'
@@ -259,8 +259,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2.0" # Limita a 80% de 1 CPU
-          memory: "2G" # Limita a 812MB de RAM
+          cpus: "1.0"
+          memory: "1G"
     depends_on:
       - prometheus
       - hoplias-rabbitmq
@@ -292,8 +292,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5" # Limita a 40% de 1 CPU
-          memory: "500M" # Limita a 512MB de RAM
+          cpus: "0.5"
+          memory: "500M"
     depends_on:
       - prometheus
       - hoplias-rabbitmq
@@ -316,8 +316,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.3" # Limita a 40% de 1 CPU
-          memory: "300M" # Limita a 512MB de RAM
+          cpus: "0.3"
+          memory: "300M"
 
   grafana:
     container_name: grafana
@@ -338,8 +338,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.3" # Limita a 40% de 1 CPU
-          memory: "300M" # Limita a 512MB de RAM
+          cpus: "0.3"
+          memory: "300M"
 
   hoplias-api-service-mongo:
     image: mongo:5.0
@@ -395,6 +395,7 @@ services:
     container_name: graylog
     image: graylog/graylog:4.3
     environment:
+      - GRAYLOG_ROOT_USERNAME=${GRAYLOG_ROOT_USERNAME}
       - GRAYLOG_HOST=graylog
       - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD}
       - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_PASSWORD_SHA}
@@ -422,8 +423,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.4" # Limita a 40% de 1 CPU
-          memory: "400M" # Limita a 512MB de RAM
+          cpus: "0.4"
+          memory: "400M"
 
   nginx:
     container_name: nginx
@@ -441,208 +442,6 @@ services:
     networks:
       - custom_network
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  
-  # letsencrypt-api:
-  #   container_name: letsencrypt-api
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-api.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # letsencrypt-ai:
-  #   container_name: letsencrypt-ai
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-api-ai.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # letsencrypt-grafana:
-  #   container_name: letsencrypt-grafana
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-grafana.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-    
-  # letsencrypt-graylog:
-  #   container_name: letsencrypt-graylog
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-graylog.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # letsencrypt-portainer:
-  #   container_name: letsencrypt-portainer
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-portainer.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # letsencrypt-rabbitmq:
-  #   container_name: letsencrypt-rabbitmq
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-rabbitmq.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # letsencrypt-sonarqube:
-  #   container_name: letsencrypt-sonarqube
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-sonarqube.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # letsencrypt-jenkins:
-  #   container_name: letsencrypt-jenkins
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d back-office-jenkins.hoplias.com
-  #     --force-renewal --text --agree-tos --email hoplias.product@gmail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # jenkins:
-  #   container_name: hoplias-jenkins
-  #   image: jenkins/jenkins:lts
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - jenkins_home:/var/jenkins_home
-  #     - .:/app
-  #   networks:
-  #     - custom_network
-
-  # sonarqube:
-  #   image: sonarqube:latest
-  #   container_name: hoplias-sonarqube
-  #   ports:
-  #     - "7000:7000"
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
-  #   environment:
-  #     - SONARQUBE_JDBC_URL=jdbc:postgresql://sonarqube-db:5434/sonar
-  #     - SONARQUBE_JDBC_USERNAME=${SONAR_USER}
-  #     - SONARQUBE_JDBC_PASSWORD=${SONAR_PASSWORD}
-  #   volumes:
-  #     - sonarqube_data:/opt/sonarqube/data
-  #     - sonarqube_extensions:/opt/sonarqube/extensions
-  #     - ./sonar.properties:/opt/sonarqube/conf/sonar.properties
-
-  # sonarqube-db:
-  #   image: postgres:latest
-  #   container_name: hoplias-sonarqube-db
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_USER=${SONAR_USER}
-  #     - POSTGRES_PASSWORD=${SONAR_PASSWORD}
-  #     - POSTGRES_DB=sonar
-  #   volumes:
-  #     - sonarqube_db:/var/lib/postgresql/data
-  #   ports:
-  #     - "5434:5432"
-
-  # sonar-scanner:
-  #   image: sonarsource/sonar-scanner-cli:latest
-  #   container_name: hoplias-sonar-scanner
-  #   volumes:
-  #     - .:/usr/src/app
-  #   networks:
-  #     - custom_network
-  #   environment:
-  #     - SONAR_HOST_URL=https://sonarqube.hoplias.com
-  #     - SONAR_LOGIN=${SONAR_USER}
-  #     - SONAR_TOKEN=${SONAR_PROJECT_TOKEN}
-  #   command:
-  #     sonar-scanner
-  #     -Dsonar.projectKey=hoplias
-  #     -Dsonar.sources=.
-  #     -Dsonar.projectName=hoplias
-  #     -Dsonar.projectVersion=1.0.0
-  #     -Dsonar.language=python
-  #     -Dsonar.sourceEncoding=UTF-8
-  #   depends_on:
-  #     - sonarqube
-  #   restart: "no"
-
-  # sqlbak-accounts:
-  #   image: pranasnet/sqlbak
-  #   container_name: hoplias-sql_bak
-  #   volumes:
-  #     - /var/lib/mysql:/var/lib/mysql
-  #   environment:
-  #     - sqlbak_key=${SECRET_SQLBAK}
-  #     - sqlbak_name=epc-hoplias
-  #     - db_type=postgresql
-  #     - user=${DB_USER}
-  #     - password=${DB_PASSWORD}
-  #     - host=hoplias-accounts-db
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
 
 networks:
   custom_network:

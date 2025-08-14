@@ -1,0 +1,61 @@
+{
+  "name": "hoplias-gui",
+  "main": "src/app.js",
+  "license": "CC-BY-NC-4.0",
+  "author": { "name": "Rodrigo J. R. dos Santos", "email": "rodrjuniorsantos@gmail.com" },
+  "version": "v1.0.0-alpha",
+  "description": "Web Toolkit For Automated Kariotype Assembly and Chromosomal Analysis",
+  "homepage": "https://github.com/RodrigoSantosRodrigues/hoplias",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder -mwl",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux deb tar.xz",
+    "build-icons": "electron-icon-builder --input=./src/assets/hoplias-white-icon.png --output=./public/assets --flatten"
+  },
+  "build": {
+    "appId": "com.hoplias.desktop",
+    "productName": "Hoplias gui",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "src/*",
+      "!node_modules"
+    ],
+    "extends": null,
+    "asar": true,
+    "extraMetadata": {
+      "main": "src/app.js"
+    },
+    "extraResources": [
+      {
+        "from": "public",
+        "to": "public"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/assets/icons/icon.ico"
+    },
+    "mac": {
+      "target": "zip",
+      "icon": "public/assets/icons/icon.icns"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "public/assets/icons/256x256.png",
+      "category": "Science",
+      "maintainer": "rodrjuniorsantos@gmail.com",
+      "synopsis": "Chromosomal Analysis Toolkit",
+      "description": "A comprehensive toolkit for automated kariotype assembly and chromosomal analysis."
+    }
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^26.0.12",
+    "electron-icon-builder": "^2.0.1"
+  }
+}

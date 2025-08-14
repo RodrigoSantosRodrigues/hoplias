@@ -2,12 +2,7 @@
 # encoding: utf-8
 # /run.py
 """
-                    Run project in development
-    ------------------------------------------------------------------------
-                        Initialize server development
-                  Obs: Do not use in production environment
-    ------------------------------------------------------------------------
-    
+
 """
 import os
 from dotenv import load_dotenv, find_dotenv

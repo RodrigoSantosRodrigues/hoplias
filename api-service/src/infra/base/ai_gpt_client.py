@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-#/src/helpers/CallApiProxy.py
 """
-                        API Gateway
-    ------------------------------------------------------------------------
-                           HTTP API Proxy
-    ------------------------------------------------------------------------
-         Sends a request to an external API, acting as a proxy
+
 """
 import logging
 import httpx

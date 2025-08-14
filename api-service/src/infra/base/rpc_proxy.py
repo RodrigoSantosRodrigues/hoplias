@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#/src/helpers/CallApiProxy.py
 """
                         API Gateway
     ------------------------------------------------------------------------
@@ -23,7 +22,7 @@ class RpcProxy:
         RoutePathWithProxy.PRECLASSIFICATION: RoutePathGateway.PRECLASSIFICATION,
         RoutePathWithProxy.CONVERT_TO_JPG: RoutePathGateway.CONVERT_TO_JPG,
       }
-      self.__headers = { 'api-token': 'htj_5y2LF4Q8z\tyusdfdfd/4589' }
+      self.__headers = { 'api-token': config.RPC_GATEWAY_KEY }
 
     def get_endpoints(self):
       return self.__endpoints_map

@@ -59,6 +59,7 @@ class Development(BaseSettings):
   DESKTOP_MODE_AUTH: str = os.getenv("DESKTOP_MODE_AUTH")
   HOST_DOCUMENTS_DIR: str = os.getenv("HOST_DOCUMENTS_DIR")
   CHATBOT_SECRET_KEY: str = os.getenv("CHATBOT_SECRET_KEY")
+  RPC_GATEWAY_KEY: str = os.getenv("RPC_GATEWAY_KEY")
 
   class Config:
     env_file = ".env"
@@ -105,6 +106,7 @@ class Production(BaseSettings):
   DESKTOP_MODE_AUTH: str = os.getenv("DESKTOP_MODE_AUTH")
   HOST_DOCUMENTS_DIR: str = os.getenv("HOST_DOCUMENTS_DIR")
   CHATBOT_SECRET_KEY: str = os.getenv("CHATBOT_SECRET_KEY")
+  RPC_GATEWAY_KEY: str = os.getenv("RPC_GATEWAY_KEY")
 
   class Config:
     env_file = ".env"
@@ -151,6 +153,7 @@ class Testing(BaseSettings):
   DESKTOP_MODE_AUTH: str = os.getenv("DESKTOP_MODE_AUTH")
   HOST_DOCUMENTS_DIR: str = os.getenv("HOST_DOCUMENTS_DIR")
   CHATBOT_SECRET_KEY: str = os.getenv("CHATBOT_SECRET_KEY")
+  RPC_GATEWAY_KEY: str = os.getenv("RPC_GATEWAY_KEY")
 
   class Config:
     env_file = ".env"
