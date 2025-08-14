@@ -490,7 +490,7 @@ class ClassificationControllerV2beta:
             poly_payload = base_payload.copy()
             poly_payload.update({
                 'id': str(uuid.uuid4()),
-                'type': 'polyline',
+                'type': 'polygon',
                 'points': points_forward,
                 'top': float(top_poly),
                 'left': float(left_poly),
