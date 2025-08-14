@@ -19,7 +19,7 @@ function createWindow() {
 
   configureCache();
 
-  mainWindow.loadURL('http://localhost:3003/user/login?client_mode=desktop'); // https://eloquent-monstera-5ebcf7.netlify.app
+  mainWindow.loadURL('https://eloquent-monstera-5ebcf7.netlify.app'); // https://eloquent-monstera-5ebcf7.netlify.app | http://localhost:3003/user/login?client_mode=desktop
   
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.show();
