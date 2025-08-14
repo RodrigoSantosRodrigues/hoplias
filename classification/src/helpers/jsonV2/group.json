@@ -45,8 +45,8 @@
     },
     "animation": {
         "type": "none",
-        "loop": false,
-        "autoplay": false,
+        "loop": true,
+        "autoplay": true,
         "delay": 100,
         "duration": 1000
     },
@@ -57,6 +57,5 @@
         "script": "return message.value > 0;",
         "effect": "style"
     },
-    "editable": true,
     "objects":[]
 }

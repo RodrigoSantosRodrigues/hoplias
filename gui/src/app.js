@@ -8,11 +8,10 @@ function createWindow() {
     width: 1280,
     height: 800,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: false,
       webSecurity: true,
-      sandbox: false,
-      preload: path.join(__dirname, 'preload.js')
+      //preload: path.join(__dirname, 'preload.js')
     },
     show: false,
     icon: path.join(__dirname, 'assets', 'icons', 'icon.png')
@@ -20,7 +19,7 @@ function createWindow() {
 
   configureCache();
 
-  mainWindow.loadURL('https://eloquent-monstera-5ebcf7.netlify.app/user/login?client_mode=desktop');
+  mainWindow.loadURL('http://localhost:3003/user/login?client_mode=desktop'); // https://eloquent-monstera-5ebcf7.netlify.app
   
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.show();

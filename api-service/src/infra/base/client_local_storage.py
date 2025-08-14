@@ -114,7 +114,7 @@ class ClientLocalStorage:
 
         except Exception as e:
             logging.error(f"Error loading image: {file_id} - {e}", exc_info=True)
-            raise
+            return None
 
     @with_cache(lambda self, file_id: file_id)
     async def load_image_(self, file_id: str):
@@ -128,4 +128,4 @@ class ClientLocalStorage:
 
         except Exception as e:
             logging.error(f"Error loading image: {file_id} - {e}", exc_info=True)
-            raise
+            return None
