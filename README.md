@@ -159,5 +159,36 @@ The following are the scientific articles used as a basis for the development of
 ---
 
 
+## Development mode
+## 🛠️ Development Guide
+
+### Quick Start
+1. Read our [Project Overview](./docs/PROJECT_OVERVIEW.md)
+2. Check the [Development Setup Guide](./docs/DEVELOPMENT_SETUP.md)
+3. Review [Code Standards](./docs/templates/CODE_STANDARDS.md)
+
+### Contributing
+1. 📋 [Contributing Guidelines](./docs/CONTRIBUTING.md)
+2. 🔄 [Git Workflow](./docs/templates/CONVETIONAL_COMMITS.md)
+3. 📝 [Pull Request Template](./.github/PULL_REQUEST_TEMPLATE.md)
+
+### Microservices Documentation
+Each service has its own setup and guidelines:
+
+- 🖥️ [GUI Service](./gui/README.md)
+- 🎯 [Core Service](./core/README.md)
+- 📦 [API Service](./api/README.md)
+
+### Additional Resources
+- 📚 [API Documentation](./docs/API.md)
+- 🧪 [Testing Guide](./docs/TESTING.md)
+- 🚀 [Deployment Guide](./docs/DEPLOYMENT.md)
+
+
+### Starting projet
+1. 🚀 Install docker
+2. ✅ run comand `./stat_hoplias.sh`
+
+❤️ Enjoy
 
 ✅ **End of Document**
