@@ -1,0 +1,13 @@
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.git
+.vscode
+*.md
+**/*.env
+.env
+.env-dev
+gui
+.github
+docs

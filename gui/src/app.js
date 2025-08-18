@@ -11,6 +11,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: true,
+      partition: 'persist:hoplias-v1.0.0-alpha-1',
       //preload: path.join(__dirname, 'preload.js')
     },
     show: false,
@@ -19,7 +20,7 @@ function createWindow() {
 
   configureCache();
 
-  mainWindow.loadURL('https://eloquent-monstera-5ebcf7.netlify.app'); // https://eloquent-monstera-5ebcf7.netlify.app | http://localhost:3003/user/login?client_mode=desktop
+  mainWindow.loadURL('https://eloquent-monstera-5ebcf7.netlify.app/user/login?client_mode=desktop'); // https://eloquent-monstera-5ebcf7.netlify.app?client_mode=desktop | http://localhost:3003/user/login?client_mode=desktop
   
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.show();

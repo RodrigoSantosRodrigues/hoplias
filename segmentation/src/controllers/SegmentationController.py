@@ -37,7 +37,8 @@ class SegmentationController:
 
   def segmentation_hoplias(self):
     classifying = ClassifierV2(self.image, None, self.logger)
-    predictions_img, predicted_cleaned = classifying.classifier_model(self.block_value, self.hard_process)
+    #predictions_img, predicted_cleaned = classifying.classifier_model(self.block_value, self.hard_process)
+    predictions_img, predicted_cleaned = classifying.classifier_model_deep()
     contouring = Contour(self.image_base64, predictions_img, predicted_cleaned, self.data)
     data = contouring.extract_contours()
     data['block_value'] = self.block_value

@@ -1,0 +1,18 @@
+# Dockerfile.unified
+FROM docker:dind
+
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.22/community" >> /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/v3.22/main" >> /etc/apk/repositories \
+    && apk update
+
+RUN apk add --no-cache docker-compose
+
+COPY start_hoplias.sh /app/start_hoplias.sh
+
+WORKDIR /app
+COPY . .
+
+COPY start_hoplias.sh /start_hoplias.sh
+RUN chmod +x /start_hoplias.sh
+
+ENTRYPOINT ["./start_hoplias.sh"]

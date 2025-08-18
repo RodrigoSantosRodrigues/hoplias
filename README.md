@@ -189,6 +189,10 @@ Each service has its own setup and guidelines:
 1. 🚀 Install docker
 2. ✅ run comand `./stat_hoplias.sh`
 
+### Generate build unified
+`docker build -f Dockerfile.unified -t hoplias-toolkit-v1.0.0-alpha-1 .`
+- for start image `docker run --privileged hoplias-toolkit-v1.0.0-alpha-1`
+
 ❤️ Enjoy
 
 ✅ **End of Document**

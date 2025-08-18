@@ -7,12 +7,12 @@ COPY . /app
 
 WORKDIR /app
 
-RUN apt-get update && pip install --upgrade pip && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libgif-dev \
     libaec-dev \
     libblosc-dev \
     libzstd-dev \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxrender1 \
@@ -21,4 +21,4 @@ RUN apt-get update && pip install --upgrade pip && apt-get install -y --no-insta
 
 RUN pip install -r requirements.txt && pip install uvicorn
 
-RUN pip install watchdog
+RUN pip install ultralytics opencv-python watchdog

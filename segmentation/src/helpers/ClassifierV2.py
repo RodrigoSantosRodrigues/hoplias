@@ -9,12 +9,14 @@
 	-----------
 '''
 import numpy as np
+import cv2
 from skimage.measure import label, regionprops
 from skimage import color
 import scipy.ndimage as nd
 import joblib
 from sklearn.ensemble import IsolationForest
 from skimage import img_as_float
+from ultralytics import YOLO
 import cloudpickle
 
 class ClassifierV2:
@@ -22,9 +24,9 @@ class ClassifierV2:
 		self.image = imageGray
 		self.binary = imageTrash
 		self.Ftest = np.array([])
-		self.path_matrix = 'src//helpers//features//v2'
 		self.objects = np.array([])
 		self.model_path = 'src//helpers//svm_model//HOPLIAS_TOOLKIT_GEN_SEG_CROM_V1.0.0_ALPHA.pkl'
+		self.model_path_deep = 'src//helpers//svm_model//HOPLIAS_TOOLKIT_YOLOV8_BEST_CPU_SEG_CROM_V1.0.0_ALPHA-1.pt'
 		self.logger = logger
 
 	def extract(self):
@@ -130,4 +132,68 @@ class ClassifierV2:
 				prediction_mask_clean[model.im_binary_label == prop.label] = 1
 	
 		return model.prediction_mask, prediction_mask_clean
-		
+
+	def classifier_model_deep(self):
+		'''
+		Sorting images in background and object with yolov8-seg model.
+		return:
+				mask: numpy array [H, W] com todos os objetos segmentados
+		'''
+		model = YOLO(self.model_path_deep)
+
+		image = self.image
+		if len(image.shape) == 4 and image.shape[0] == 1 and image.shape[1] == 3:
+			image = image.squeeze(0).transpose(1, 2, 0)
+
+		if image.dtype != np.uint8:
+			image = image.astype(np.uint8)
+
+		image_bgr = image
+		if len(image.shape) == 2:
+			image_bgr = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+		elif image.shape[2] == 4:
+			image_bgr = cv2.cvtColor(image, cv2.COLOR_RGBA2BGR)
+		elif image.shape[2] == 3:
+			if np.allclose(image[...,0], image[...,1]) and np.allclose(image[...,0], image[...,2]):
+				image_bgr = cv2.cvtColor(image[...,0], cv2.COLOR_GRAY2BGR)
+			else:
+				image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+		else:
+			raise ValueError(f"Format not suported: {image.shape}")
+
+		results = model.predict(image_bgr)
+
+		height, width = image.shape[:2]
+		combined_mask = np.zeros((height, width), dtype=np.uint8)
+
+		for result in results:
+			if result.masks is None:
+				continue
+
+			masks = result.masks.data.cpu().numpy()
+			boxes = result.boxes.xyxy.cpu().numpy().astype(int)
+
+			for seg_mask, box in zip(masks, boxes):
+				seg_mask_resized = cv2.resize(seg_mask, (width, height))
+				seg_mask_bin = (seg_mask_resized > 0.5).astype(np.uint8)
+
+				x1, y1, x2, y2 = box
+				x1, y1 = max(x1,0), max(y1,0)
+				x2, y2 = min(x2,width), min(y2,height)
+
+				masked_img = cv2.bitwise_and(image_bgr, image_bgr, mask=seg_mask_bin)
+				gray_roi = cv2.cvtColor(masked_img, cv2.COLOR_BGR2GRAY)
+				# crop bbox
+				gray_crop = gray_roi[y1:y2, x1:x2]
+				refined_crop = seg_mask_bin[y1:y2, x1:x2]
+
+				kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3,3))
+				refined_crop = cv2.morphologyEx(gray_crop, cv2.MORPH_ERODE, kernel)
+				refined_mask = np.zeros_like(seg_mask_bin, dtype=np.uint8)
+				refined_mask[y1:y2, x1:x2] = refined_crop
+				combined_mask = np.logical_or(combined_mask, refined_mask).astype(np.uint8)
+
+		kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+		combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel)
+
+		return combined_mask, combined_mask
