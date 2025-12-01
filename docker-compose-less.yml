@@ -1,16 +1,16 @@
 services:
-  # portainer:
-  #   container_name: portainer
-  #   image: portainer/portainer
-  #   volumes:
-  #     - ${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock
-  #     - /run/lib/docker/volumes:/run/lib/docker/volumes
-  #   ports:
-  #     - "9000:9000"
-  #   networks:
-  #     custom_network:
-  #         ipv4_address: 172.20.0.101
-  #   restart: unless-stopped
+  portainer:
+    container_name: portainer
+    image: portainer/portainer
+    volumes:
+      - ${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock
+      - /run/lib/docker/volumes:/run/lib/docker/volumes
+    ports:
+      - "9000:9000"
+    networks:
+      custom_network:
+          ipv4_address: 172.20.0.101
+    restart: unless-stopped
 
   hoplias-rabbitmq:
     image: rabbitmq:3-management
@@ -212,37 +212,37 @@ services:
       - custom_network
     command: bash -c 'while !</dev/tcp/hoplias-rabbitmq/5672; do sleep 1; done; watchmedo auto-restart --pattern="*.py" --recursive -- nameko run --config config.yml src.service'
   
-  # prometheus:
-  #   container_name: prometheus
-  #   image: prom/prometheus
-  #   ports:
-  #     - "9090:9090"
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
-  #   command:
-  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - custom_network
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
 
-  # grafana:
-  #   container_name: grafana
-  #   image: grafana/grafana
-  #   environment:
-  #     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
-  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-  #     - GF_USERS_ALLOW_SIGN_UP=false
-  #     - GF_SERVER_ROOT_URL=http://200.17.76.43:8080/grafana/
-  #     - GF_SERVER_SERVE_FROM_SUB_PATH=true
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - prometheus
-  #   volumes:
-  #     - grafana_data:/run/lib/grafana
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://200.17.76.43:8080/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    ports:
+      - "3000:3000"
+    networks:
+      - custom_network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/run/lib/grafana
 
   hoplias-api-service-mongo:
     image: mongo:5.0
@@ -260,59 +260,59 @@ services:
       MONGO_INITDB_DATABASE: ${DB_API}
     command: ["mongod", "--bind_ip_all", "--auth"]
   
-  # mongo:
-  #   container_name: api-service-mongo
-  #   image: mongo:3
-  #   networks:
-  #     - custom_network
-  #   volumes:
-  #     - mongodb_data:/data/db
-  #   restart: unless-stopped
+  mongo:
+    container_name: api-service-mongo
+    image: mongo:3
+    networks:
+      - custom_network
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
 
-  # elasticsearch:
-  #   container_name: api-service-elasticsearch
-  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
-  #   environment:
-  #     - http.host=0.0.0.0
-  #     - transport.host=localhost
-  #     - network.host=0.0.0.0
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #  # ulimits:
-  #  #   memlock:
-  #  #     soft: -1
-  #  #     hard: -1
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
+  elasticsearch:
+    container_name: api-service-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+   # ulimits:
+   #   memlock:
+   #     soft: -1
+   #     hard: -1
+    networks:
+      - custom_network
+    restart: unless-stopped
 
-  # graylog:
-  #   container_name: graylog
-  #   image: graylog/graylog:4.3
-  #   environment:
-  #     - GRAYLOG_HOST=graylog
-  #     - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD}
-  #     - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_PASSWORD_SHA}
-  #     - GRAYLOG_HTTP_EXTERNAL_URI=${GRAYLOG_HTTP_EXTERNAL_URI}
-  #     - GRAYLOG_HTTP_ENABLE_CORS=true
-  #     - GRAYLOG_HTTP_CORS_ALLOW_ORIGIN=${GRAYLOG_HTTP_CORS_ALLOW_ORIGIN}
-  #     - GRAYLOG_HTTP_BIND_ADDRESS=graylog:9001
-  #   depends_on:
-  #     - mongo
-  #     - elasticsearch
-  #   restart: unless-stopped
-  #   ports:
-  #     # Graylog web interface and REST API
-  #     - 9001:9001
-  #     # Syslog TCP
-  #     - 1514:1514
-  #     # Syslog UDP
-  #     - 1514:1514/udp
-  #     # GELF TCP
-  #     - 12201:12201
-  #     # GELF UDP
-  #     - 12201:12201/udp
-  #   networks:
-  #     - custom_network
+  graylog:
+    container_name: graylog
+    image: graylog/graylog:4.3
+    environment:
+      - GRAYLOG_HOST=graylog
+      - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD}
+      - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_PASSWORD_SHA}
+      - GRAYLOG_HTTP_EXTERNAL_URI=${GRAYLOG_HTTP_EXTERNAL_URI}
+      - GRAYLOG_HTTP_ENABLE_CORS=true
+      - GRAYLOG_HTTP_CORS_ALLOW_ORIGIN=${GRAYLOG_HTTP_CORS_ALLOW_ORIGIN}
+      - GRAYLOG_HTTP_BIND_ADDRESS=graylog:9001
+    depends_on:
+      - mongo
+      - elasticsearch
+    restart: unless-stopped
+    ports:
+      # Graylog web interface and REST API
+      - 9001:9001
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    networks:
+      - custom_network
 
   nginx:
     container_name: nginx
