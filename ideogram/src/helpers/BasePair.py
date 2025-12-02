@@ -12,7 +12,29 @@
            https://www.rug.nl/about-ug/latest-news/events/promoties/promoties-2018?hfId=2067&lang=nl
 '''
 import re
-from matplotlib.collections import BrokenBarHCollection
+from matplotlib.patches import Rectangle
+from matplotlib.collections import PatchCollection
+import numpy as np
+
+# BrokenBarHCollection compatibility for matplotlib >= 3.5
+class BrokenBarHCollection(PatchCollection):
+    """Compatibility class for BrokenBarHCollection using PatchCollection"""
+    def __init__(self, xranges, yrange, facecolors=None, **kwargs):
+        patches = []
+        if facecolors is None:
+            facecolors = ['blue'] * len(xranges)
+        elif isinstance(facecolors, (list, tuple)) and len(facecolors) != len(xranges):
+            # If single color provided, use for all
+            if len(facecolors) == 1 or not isinstance(facecolors[0], (list, tuple)):
+                facecolors = [facecolors] * len(xranges)
+        
+        for i, xr in enumerate(xranges):
+            color = facecolors[i] if isinstance(facecolors, list) and i < len(facecolors) else facecolors
+            rect = Rectangle((xr[0], yrange[0]), xr[1], yrange[1], facecolor=color)
+            patches.append(rect)
+        
+        super().__init__(patches, **kwargs)
+
 from matplotlib import pyplot as plt
 import mpld3
 from ..utils.colors import colors

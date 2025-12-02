@@ -29,7 +29,7 @@ class Auth:
         payload,
         jwt_signature,
         'HS256'
-      ).decode("utf-8")
+      )
     except Exception as e:
       raise HTTPException(
             status_code=StatusCode.HTTP_NOT_CREATE_TOKEN,
@@ -45,7 +45,7 @@ class Auth:
     """
     re = {'data': {}, 'error': {}}
     try:
-      payload = jwt.decode(token, jwt_signature)
+      payload = jwt.decode(token, jwt_signature, algorithms=['HS256'])
       re['data'] = {'user_id': payload['sub']}
       return re
     except jwt.ExpiredSignatureError as ex:

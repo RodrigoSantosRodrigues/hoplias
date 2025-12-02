@@ -56,4 +56,4 @@ class ShareDto(BaseModel):
     modified_at: datetime.datetime = None
 
     class Config:
-      orm_mode = True
+      from_attributes = True

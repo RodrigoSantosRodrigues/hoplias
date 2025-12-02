@@ -1,5 +1,5 @@
 import datetime
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 from typing import Union, List, Dict
 from ...enums.status_enum import StatusKariotypeEnum
 from ...enums.analyse_enum import SpecieTypeEnum, OrdenationTypeEnum
@@ -13,7 +13,7 @@ class SegmentedAutomatic(BaseModel):
     name: Union[int, None] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ChromosomeDto(BaseModel):
@@ -56,7 +56,7 @@ class ChromosomeDto(BaseModel):
     file_gray_drive_id: Union[str, None] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class KariotypeDto(BaseModel):
@@ -73,8 +73,8 @@ class KariotypeDto(BaseModel):
     chromosome_number: Union[int, None] = None
     block_threshold: Union[int, None] = None
     canva: Dict = {}
-    left: Union[str, None] = None
-    top: Union[int, None] = None
+    left: Union[str, float, None] = None
+    top: Union[int, float, None] = None
     width: Union[int, None] = None
     height: Union[int, None] = None
     size: Union[int, None] = None
@@ -101,9 +101,10 @@ class KariotypeDto(BaseModel):
     created_at: Union[datetime.datetime, None] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-    @validator('status')
+    @field_validator('status')
+    @classmethod
     def validate_status(cls, v):
         if v not in [StatusKariotypeEnum.PENDING, StatusKariotypeEnum.COMPLETED,
                      StatusKariotypeEnum.CANCELED, StatusKariotypeEnum.PLANNED,
@@ -113,7 +114,8 @@ class KariotypeDto(BaseModel):
             raise ValueError(f'Invalid status: {v}. Must be one of {list(StatusKariotypeEnum.__dict__.values())}')
         return v
 
-    @validator('specie_type')
+    @field_validator('specie_type')
+    @classmethod
     def validate_specie_type(cls, v):
         if v not in [SpecieTypeEnum.ANIMALS,
                      SpecieTypeEnum.HUMANS,
@@ -121,7 +123,8 @@ class KariotypeDto(BaseModel):
             raise ValueError(f'Invalid specie type: {v}. Must be one of {list(SpecieTypeEnum.__dict__.values())}')
         return v
 
-    @validator('ordenation_type')
+    @field_validator('ordenation_type')
+    @classmethod
     def validate_ordenation_type(cls, v):
         if v not in [OrdenationTypeEnum.SIZE,
                      OrdenationTypeEnum.CLASS_SIZE,
@@ -171,9 +174,10 @@ class UpdateDto(BaseModel):
     modified_at: Union[datetime.datetime, None] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-    @validator('status')
+    @field_validator('status')
+    @classmethod
     def validate_status(cls, v):
         if v not in [StatusKariotypeEnum.PENDING, StatusKariotypeEnum.COMPLETED,
                      StatusKariotypeEnum.CANCELED, StatusKariotypeEnum.PLANNED,
@@ -183,7 +187,8 @@ class UpdateDto(BaseModel):
             raise ValueError(f'Invalid status: {v}. Must be one of {list(StatusKariotypeEnum.__dict__.values())}')
         return v
 
-    @validator('specie_type')
+    @field_validator('specie_type')
+    @classmethod
     def validate_specie_type(cls, v):
         if v not in [SpecieTypeEnum.ANIMALS,
                      SpecieTypeEnum.HUMANS,
@@ -191,7 +196,8 @@ class UpdateDto(BaseModel):
             raise ValueError(f'Invalid specie type: {v}. Must be one of {list(SpecieTypeEnum.__dict__.values())}')
         return v
 
-    @validator('ordenation_type')
+    @field_validator('ordenation_type')
+    @classmethod
     def validate_ordenation_type(cls, v):
         if v not in [OrdenationTypeEnum.SIZE,
                      OrdenationTypeEnum.CLASS_SIZE,

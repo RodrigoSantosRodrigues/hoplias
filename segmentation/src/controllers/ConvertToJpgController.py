@@ -1,8 +1,9 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import json
-import cv2
 import base64
+from io import BytesIO
+from imageio import imread
 
 from ..helpers.ConvertToJpg import ConvertToJpg
 
@@ -20,8 +21,10 @@ class ConvertToJpgController:
     self.image_base64 = data.get('src')
     image_b64 = self.image_base64.split(",")[1]
     binary = base64.b64decode(image_b64)
-    image = np.asarray(bytearray(binary), dtype="uint8")
-    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+    # Decode image using imageio
+    image = imread(BytesIO(binary))
+    # imageio returns RGB, but we need BGR for compatibility (or keep RGB if other parts handle it)
+    # For now, keep RGB as skimage uses RGB
     self.image = image
 
   def convert_to_jpg(self):

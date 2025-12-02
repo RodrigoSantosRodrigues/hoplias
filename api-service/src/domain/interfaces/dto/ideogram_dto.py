@@ -20,7 +20,7 @@ class CreateIdeogramDto(BaseModel):
   created_at: Union[datetime.datetime, None] = None
 
   class Config:
-    orm_mode = True
+    from_attributes = True
 
 class UpdateIdeogramDto(BaseModel):
   name: Optional[str] = None
@@ -38,4 +38,4 @@ class UpdateIdeogramDto(BaseModel):
   modified_at: Union[datetime.datetime, None] = None
 
   class Config:
-    orm_mode = True
+    from_attributes = True

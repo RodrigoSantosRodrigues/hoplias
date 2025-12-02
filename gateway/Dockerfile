@@ -1,17 +1,13 @@
-FROM python:3.7
-
-COPY requirements.txt /app/requirements.txt
-
-COPY . /app
+FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    libaec-dev \
-    libblosc-dev \
-    libzstd-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy requirements first for better Docker layer caching
+COPY requirements.txt /app/requirements.txt
 
-RUN pip install -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir watchdog
 
-RUN pip install watchdog
+# Copy application code last
+COPY . /app

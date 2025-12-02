@@ -4,8 +4,9 @@ import uuid
 import graypy
 
 from fastapi.logger import logger
-from typing import Any
-from pydantic import BaseSettings
+from typing import Any, Optional
+from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 from dotenv import load_dotenv, find_dotenv
 from pygelf import GelfUdpHandler
 
@@ -61,8 +62,7 @@ class Development(BaseSettings):
   CHATBOT_SECRET_KEY: str = os.getenv("CHATBOT_SECRET_KEY")
   RPC_GATEWAY_KEY: str = os.getenv("RPC_GATEWAY_KEY")
 
-  class Config:
-    env_file = ".env"
+  model_config = ConfigDict(env_file=".env", extra="ignore")
 
 
 class Production(BaseSettings):
@@ -108,8 +108,7 @@ class Production(BaseSettings):
   CHATBOT_SECRET_KEY: str = os.getenv("CHATBOT_SECRET_KEY")
   RPC_GATEWAY_KEY: str = os.getenv("RPC_GATEWAY_KEY")
 
-  class Config:
-    env_file = ".env"
+  model_config = ConfigDict(env_file=".env", extra="ignore")
 
 
 class Testing(BaseSettings):
@@ -117,8 +116,8 @@ class Testing(BaseSettings):
   Development environment configuration
   """
   ENV : str = Mapper.ENV_TESTING
-  REDOC_URL: str = None
-  DOCS_URL: str = None
+  REDOC_URL: Optional[str] = None
+  DOCS_URL: Optional[str] = None
   APP_HOST: str = os.getenv("APP_HOST")
   APP_PORT: int = os.getenv("APP_PORT")
   JWT_SIGNATURE_TOKEN: str = os.getenv("JWT_SIGNATURE_TOKEN")
@@ -155,8 +154,7 @@ class Testing(BaseSettings):
   CHATBOT_SECRET_KEY: str = os.getenv("CHATBOT_SECRET_KEY")
   RPC_GATEWAY_KEY: str = os.getenv("RPC_GATEWAY_KEY")
 
-  class Config:
-    env_file = ".env"
+  model_config = ConfigDict(env_file=".env", extra="ignore")
 
 host_app = 'http://{0}:{1}'.format(os.getenv("APP_HOST"), os.getenv("APP_PORT"))
 app_config = {
@@ -179,8 +177,13 @@ db_connection = 'mongodb://{0}:{1}@{2}:{3}/{4}?authSource=admin'.format(
 logger.setLevel(logging.DEBUG)
 graylog_host = os.getenv("GRAYLOG_HOST")
 graylog_port_udp = os.getenv("GRAYLOG_PORT_UDP")
-logger.info(graylog_host)
-logger.info(graylog_port_udp)
-handler = GelfUdpHandler(host=graylog_host, port=int(graylog_port_udp), include_extra_fields=True)
-logger.addHandler(handler)
+if graylog_host and graylog_port_udp:
+    try:
+        handler = GelfUdpHandler(host=graylog_host, port=int(graylog_port_udp), include_extra_fields=True)
+        logger.addHandler(handler)
+        logger.info(f"Graylog handler configured: {graylog_host}:{graylog_port_udp}")
+    except Exception as e:
+        logger.warning(f"Failed to configure Graylog handler: {e}")
+else:
+    logger.warning("Graylog configuration missing: GRAYLOG_HOST or GRAYLOG_PORT_UDP not set")
 logger.addFilter(ContextFilter())

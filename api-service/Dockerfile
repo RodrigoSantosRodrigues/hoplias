@@ -1,15 +1,23 @@
-FROM python:3.9
-
-COPY requirements.txt /app/requirements.txt
-
-COPY . /app
+FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y build-essential python3-dev libffi-dev
+# Install system dependencies with error handling
+RUN apt-get update || true && \
+    apt-get install -y --no-install-recommends --fix-missing \
+        gcc \
+        make \
+        python3-dev \
+        libffi-dev \
+    || true && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade setuptools importlib-metadata pip
+# Copy requirements first for better Docker layer caching
+COPY requirements.txt /app/requirements.txt
 
-RUN pip install --upgrade pip setuptools wheel
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir uvicorn watchdog
 
-RUN pip install -r requirements.txt uvicorn watchdog
+# Copy application code last
+COPY . /app

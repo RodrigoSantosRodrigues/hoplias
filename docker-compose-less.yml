@@ -97,7 +97,7 @@ services:
 
   hoplias-api-service:
     container_name: hoplias-api-service
-    image: python:3.9
+    image: python:3.9-slim
     build:
       context: ./api-service
       dockerfile: Dockerfile

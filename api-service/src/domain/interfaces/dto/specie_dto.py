@@ -20,7 +20,7 @@ class SpecieDto(BaseModel):
   created_by_user: Union[str, None] = None
 
   class Config:
-    orm_mode = True
+    from_attributes = True
 
 
 class UpdateDto(BaseModel):
@@ -41,4 +41,4 @@ class UpdateDto(BaseModel):
   modified_at: Union[datetime.datetime, None] = None
 
   class Config:
-    orm_mode = True
+    from_attributes = True

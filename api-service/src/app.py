@@ -13,6 +13,7 @@ from .infra.base.db import db
 async def db_lifespan(app: FastAPI):
     # Startup
     app.database = db
+    logger.info("Starting up")
 
     yield
     # Shutdown
@@ -80,10 +81,6 @@ def create_app(env_name):
       raise
 
   instrumentator = Instrumentator().instrument(app)
-
-  @app.on_event("startup")
-  async def startup():
-    instrumentator.expose(app)
-    logger.info("Starting up")
+  instrumentator.expose(app)
 
   return app

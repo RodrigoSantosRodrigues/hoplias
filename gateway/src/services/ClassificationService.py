@@ -3,7 +3,6 @@
 """
 """
 import numpy
-import cv2
 import json
 import logging
 from flask import request, g, Blueprint, json, Response

@@ -2,12 +2,13 @@
 """
 """
 import numpy
-import cv2
 import json
 import logging
+from io import BytesIO
+from imageio import imread
 
 from ..config import rabbit_config
-from flask import request, g, Blueprint, json, Response
+from flask import request, g, Blueprint, Response
 from ..auth.Authentication import Auth
 from ..helpers.CallRpc import rpc_proxy
 
@@ -24,10 +25,8 @@ class NumpyEncoder(json.JSONEncoder):
 def segmentation_create():
   try:
     req_data = request.files['image'].read()
-    #convert string data to numpy array
-    numpyImage = numpy.fromstring(req_data, numpy.uint8)
-    # convert numpy array to image
-    image = cv2.imdecode(numpyImage, cv2.IMREAD_COLOR)
+    # convert binary data to image using imageio
+    image = imread(BytesIO(req_data))
     
     data= json.dumps({'image': image, }, cls=NumpyEncoder)
 
@@ -68,13 +67,3 @@ def convert_to_jpg_hoplias():
   except Exception as error:
     logging.error(f"Response rpc: {error}")
     return custom_response({'error': error}, 500)
-
-def custom_response(res, status_code):
-  """
-  Custom Response Function
-  """
-  return Response(
-    mimetype="application/json",
-    response=json.dumps(res),
-    status=status_code
-  )

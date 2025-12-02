@@ -34,7 +34,7 @@ nameko==2.14.1
 nameko-sqlalchemy==1.5.0
 networkx==3.4.2
 numpy==2.0.2
-opencv-python==4.11.0.86
+opencv-python-headless==4.11.0.86
 packaging==24.2
 path==17.1.0
 path.py==12.5.0

@@ -8,7 +8,6 @@
 	-----------
 			
 '''
-import cv2
 from skimage import color
 from skimage import  img_as_uint
 import numpy as np

@@ -17,7 +17,7 @@ class CreateFolderDto(BaseModel):
   created_by_user: str = None
 
   class Config:
-    orm_mode = True
+    from_attributes = True
 
 class UpdateFolderDto(BaseModel):
   name: str = None

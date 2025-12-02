@@ -9,10 +9,9 @@
 			References:
 				Jean-Patrick Pommier --> http://www.dip4fish.blogspot.com
 '''
-import cv2
 import numpy as np
 from skimage.filters import threshold_otsu, threshold_local, threshold_niblack, threshold_sauvola
-from skimage import img_as_ubyte
+from skimage import img_as_ubyte, color, filters
 import mahotas
 from skimage import morphology, exposure
 from skimage.measure import label
@@ -145,12 +144,12 @@ class MorphologyV2:
 	def segment_hard_metaphase(self, no_background):
 		blur_low_res = nd.gaussian_filter(no_background,35)
 		blur_hi_res = nd.gaussian_filter(no_background,1)
-		mid_pass = cv2.subtract(blur_hi_res,0.70*blur_low_res,dtype=16)
+		mid_pass = np.subtract(blur_hi_res, 0.70*blur_low_res, dtype=np.int16)
 		bin = ( mid_pass>1.5*mid_pass.mean())
 		bin_low_res = nd.binary_opening(bin,morphology.disk(4))
 		bin_lr = clear_border(bin_low_res)
 		blur = nd.gaussian_filter(no_background,5)
-		hi_pass = cv2.subtract(no_background,1.0*blur,dtype=16)
+		hi_pass = np.subtract(no_background, 1.0*blur, dtype=np.int16)
 		grad_low_res = nd.morphological_gradient(no_background, (3, 3))
 
 		b_seeds1 = (hi_pass>hi_pass.mean())
@@ -170,7 +169,8 @@ class MorphologyV2:
 		gray = self.image.copy()
 		dark_image = False
 		if len(image.shape) == 3:
-			gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+			# Convert RGB to GRAY (imageio returns RGB, skimage uses RGB)
+			gray = color.rgb2gray(image)
 		else:
 			gray = image.copy()
 
@@ -190,12 +190,14 @@ class MorphologyV2:
 
 		image_corrected = image
 		if not dark_image and self.__hard_process:
-			blurred = cv2.GaussianBlur(gray, (1, 1), 0)
+			# GaussianBlur with (1,1) kernel and sigma=0 -> minimal blur, use sigma=0.5 for small blur
+			blurred = nd.gaussian_filter(gray, sigma=0.5)
 		
 			mode_val =  mode_stat(blurred.ravel(), keepdims=True)[0][0]
 			mode_val = int(mode_val)
-			mask_background = cv2.inRange(blurred, mode_val - 1, mode_val + 1)
-			grad_mask = cv2.GaussianBlur(mask_background.astype(np.float32), (1, 1), 0)
+			# inRange equivalent: check if value is between low and high
+			mask_background = np.logical_and(blurred >= mode_val - 1, blurred <= mode_val + 1).astype(np.uint8) * 255
+			grad_mask = nd.gaussian_filter(mask_background.astype(np.float32), sigma=0.5)
 			grad_mask = grad_mask / grad_mask.max()
 			grad_mask = (grad_mask * 255).astype(np.uint8)
 		
@@ -235,7 +237,7 @@ class MorphologyV2:
 		mode = self.modal_value(image_corrected)
 		back = np.zeros(image_corrected.shape, image_corrected.dtype)
 		back.fill(mode)
-		im = cv2.subtract(image_corrected, back)
+		im = np.subtract(image_corrected, back, dtype=image_corrected.dtype)
 
 		if dark_image:
 			im = self.segment_hard_metaphase(im)

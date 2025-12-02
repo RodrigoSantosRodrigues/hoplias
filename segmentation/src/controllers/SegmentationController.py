@@ -1,8 +1,9 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import json
-import cv2
 import base64
+from io import BytesIO
+from imageio import imread
 
 from ..helpers.FilterV2 import FilterV2
 from ..helpers.MorphologyV2 import MorphologyV2
@@ -25,8 +26,10 @@ class SegmentationController:
     image_b64 = self.image_base64.split(",")[1]
     #self.logger.info(f"Loading image from base64: {image_b64}")
     binary = base64.b64decode(image_b64)
-    image = np.asarray(bytearray(binary), dtype="uint8")
-    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+    # Decode image using imageio
+    image = imread(BytesIO(binary))
+    # imageio returns RGB, but we need BGR for compatibility (or keep RGB if other parts handle it)
+    # For now, keep RGB as skimage uses RGB
     self.image = image
 
   def load_block_value(self, data):
@@ -37,8 +40,8 @@ class SegmentationController:
 
   def segmentation_hoplias(self):
     classifying = ClassifierV2(self.image, None, self.logger)
-    #predictions_img, predicted_cleaned = classifying.classifier_model(self.block_value, self.hard_process)
-    predictions_img, predicted_cleaned = classifying.classifier_model_deep()
+    predictions_img, predicted_cleaned = classifying.classifier_model(self.block_value, self.hard_process)
+    #predictions_img, predicted_cleaned = classifying.classifier_model_deep()
     contouring = Contour(self.image_base64, predictions_img, predicted_cleaned, self.data)
     data = contouring.extract_contours()
     data['block_value'] = self.block_value
