@@ -55,3 +55,6 @@ nginx-less.conf
 docker-compose-prd.yml
 docker-compose-hydro.yml
 docker-compose-hydro-less.yml
+
+local_storage
+local_storage/*
