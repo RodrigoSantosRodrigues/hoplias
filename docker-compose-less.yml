@@ -340,7 +340,8 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
     restart: unless-stopped
-    command: sh -c 'printf "tunnel: %s\n\n" "$${CLOUDFLARE_TUNNEL_TOKEN}" > /tmp/config.yml && cat /etc/cloudflared/config.yml >> /tmp/config.yml && tunnel --no-autoupdate run --config /tmp/config.yml'
+    entrypoint: /bin/sh
+    command: /etc/cloudflared/entrypoint.sh
     env_file:
       - .env
     volumes:
