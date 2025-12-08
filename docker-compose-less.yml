@@ -320,9 +320,9 @@ services:
       context: .
       dockerfile: config/nginx-less.Dockerfile
     # Ports removed - nginx is now only accessible via Cloudflare Tunnel
-    # ports:
-    #   - "8080:80"
-    #   - "8443:443"
+    ports:
+      - "8080:80"
+      - "8443:443"
     volumes:
       - ./config:/config
       - /etc/letsencrypt:/etc/letsencrypt:ro
