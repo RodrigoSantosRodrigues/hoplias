@@ -107,11 +107,6 @@ Após configurar tudo:
 - Verifique os logs do container: `docker logs cloudflared`
 - Certifique-se de que o nginx está rodando: `docker ps | grep nginx`
 
-### Erro 502 Bad Gateway
-
-- Verifique se o nginx está acessível na rede Docker: `docker exec cloudflared ping nginx`
-- Verifique se o nginx está escutando na porta 80: `docker exec nginx netstat -tlnp | grep 80`
-
 ### DNS não resolve
 
 - Verifique se o registro CNAME está configurado corretamente no Cloudflare

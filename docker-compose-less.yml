@@ -340,8 +340,7 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
     restart: unless-stopped
-    entrypoint: /bin/sh
-    command: /etc/cloudflared/entrypoint.sh
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     env_file:
       - .env
     volumes:
