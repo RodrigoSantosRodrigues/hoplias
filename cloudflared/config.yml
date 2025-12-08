@@ -15,7 +15,7 @@
 # or defined here. If using token, the tunnel configuration from Cloudflare Dashboard takes precedence.
 ingress:
   # Route all traffic to nginx
-  - hostname: <YOUR_DOMAIN>
+  - hostname: api.hoplias.com
     service: http://nginx:80
   # Catch-all rule (must be last)
   - service: http_status:404
