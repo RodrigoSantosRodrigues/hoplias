@@ -1,0 +1,139 @@
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+*.md
+docs/
+README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+ENV/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm
+.yarn
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+*.dockerfile
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Environment
+.env
+.env-*
+!.env.example
+env.example
+
+# Test files
+tests/
+test_*.py
+*_test.py
+specs/
+
+# Build artifacts
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Local storage (will be mounted as volume)
+local_storage/
+*/local_storage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+*.orig
+
+# CI/CD
+Jenkinsfile
+.gitlab-ci.yml
+.travis.yml
+
+# Sonar
+sonar.properties
+
+# Electron
+dist/
+dist_*/
+*.exe
+*.zip
+*.deb
+*.AppImage
+*.tar.xz
+
+# Model files (large)
+*.pt
+*.pth
+*.h5
+*.pb
+*.onnx
+
+# Data files
+*.csv
+*.json
+!package.json
+!package-lock.json
+
+# Old scripts (keep only optimized ones)
+start_hoplias.sh
+start_hoplias-less.sh
+
+# Config files that will be copied
+!config/nginx-less.conf
+!config/nginx-less.Dockerfile
+!prometheus.yml
+

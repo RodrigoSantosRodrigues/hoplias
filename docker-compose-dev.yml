@@ -47,6 +47,28 @@ services:
       timeout: 5s
       retries: 5
 
+  # hoplias-chatbot:
+  #   container_name: hoplias-chatbot
+  #   build:
+  #     context: ./gui
+  #     dockerfile: Dockerfile.chatbot
+  #   volumes:
+  #     - ./gui:/app
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3001:80"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - SKIP_PREFLIGHT_CHECK=true
+  #     - GENERATE_SOURCEMAP=false
+  #     - WDS_SOCKET_HOST=172.19.0.100
+  #     - CHOKIDAR_USEPOLLING=true
+  #     - WATCHPACK_POLLING=true
+  #     - HTTPS=true
+  #   networks:
+  #     pubnetwork:
+  #      ipv4_address: 172.19.0.100
+
   hoplias-gateway:
     container_name: hoplias-gateway
     image: python:3.9
@@ -75,7 +97,7 @@ services:
 
   hoplias-api-service:
     container_name: hoplias-api-service
-    image: python:3.9
+    image: python:3.9-slim
     build:
       context: ./api-service
       dockerfile: Dockerfile
@@ -296,7 +318,7 @@ services:
     container_name: nginx
     build:
       context: .
-      dockerfile: config/nginx-dev.Dockerfile
+      dockerfile: config/nginx-less.Dockerfile
     ports:
       - "8080:80"
       - "8443:443"
@@ -312,125 +334,6 @@ services:
       custom_network:
         ipv4_address: 172.20.0.100
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  # hoplias-chatbot:
-  #   container_name: hoplias-chatbot
-  #   build:
-  #     context: ./gui
-  #     dockerfile: Dockerfile.chatbot
-  #   volumes:
-  #     - ./gui:/app
-  #   restart: unless-stopped
-  #   ports:
-  #     - "3001:80"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - SKIP_PREFLIGHT_CHECK=true
-  #     - GENERATE_SOURCEMAP=false
-  #     - WDS_SOCKET_HOST=172.19.0.100
-  #     - CHOKIDAR_USEPOLLING=true
-  #     - WATCHPACK_POLLING=true
-  #     - HTTPS=true
-  #   networks:
-  #     pubnetwork:
-  #      ipv4_address: 172.19.0.100
-
-  # letsencrypt:
-  #   container_name: letsencrypt
-  #   image: certbot/certbot
-  #   command: >
-  #     sh -c "certbot certonly --webroot -w /tmp/acme_challenge
-  #     -d domain.com
-  #     --force-renewal --text --agree-tos --email mail@mail.com
-  #     --rsa-key-size 4096 --verbose --preferred-challenges=http &&
-  #     trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
-  #   volumes:
-  #     - "/etc/letsencrypt:/etc/letsencrypt"
-  #     - "/tmp/acme_challenge:/tmp/acme_challenge"
-  #   environment:
-  #     - TERM=xterm
-
-  # sqlbak:
-  #   image: pranasnet/sqlbak
-  #   container_name: hoplias-sql_bak
-  #   volumes:
-  #     - /var/lib/mysql:/var/lib/mysql
-  #   environment:
-  #     - sqlbak_key=${SECRET_SQLBAK}
-  #     - sqlbak_name=
-  #     - db_type=postgresql
-  #     - user=${DB_USER}
-  #     - password=${DB_PASSWORD}
-  #     - host=
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
-
-  # jenkins:
-  #   container_name: hoplias-jenkins
-  #   image: jenkins/jenkins:lts
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - jenkins_home:/var/jenkins_home
-  #     - .:/app
-  #   networks:
-  #     - custom_network
-
-  # sonarqube:
-  #   image: sonarqube:latest
-  #   container_name: hoplias-sonarqube
-  #   ports:
-  #     - "7000:7000"
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
-  #   environment:
-  #     - SONARQUBE_JDBC_URL=jdbc:postgresql://sonarqube-db:5434/sonar
-  #     - SONARQUBE_JDBC_USERNAME=${SONAR_USER}
-  #     - SONARQUBE_JDBC_PASSWORD=${SONAR_PASSWORD}
-  #   volumes:
-  #     - sonarqube_data:/opt/sonarqube/data
-  #     - sonarqube_extensions:/opt/sonarqube/extensions
-  #     - ./sonar.properties:/opt/sonarqube/conf/sonar.properties
-
-  # sonarqube-db:
-  #   image: postgres:latest
-  #   container_name: hoplias-sonarqube-db
-  #   networks:
-  #     - custom_network
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_USER=${SONAR_USER}
-  #     - POSTGRES_PASSWORD=${SONAR_PASSWORD}
-  #     - POSTGRES_DB=sonar
-  #   volumes:
-  #     - sonarqube_db:/var/lib/postgresql/data
-  #   ports:
-  #     - "5434:5432"
-
-  # sonar-scanner:
-  #   image: sonarsource/sonar-scanner-cli:latest
-  #   container_name: hoplias-sonar-scanner
-  #   volumes:
-  #     - .:/usr/src/app
-  #   networks:
-  #     - custom_network
-  #   environment:
-  #     - SONAR_HOST_URL=https://subdomain.com
-  #     - SONAR_LOGIN=${SONAR_USER}
-  #     - SONAR_TOKEN=${SONAR_PROJECT_TOKEN}
-  #   command:
-  #     sonar-scanner
-  #     -Dsonar.projectKey=hoplias
-  #     -Dsonar.sources=.
-  #     -Dsonar.projectName=hoplias
-  #     -Dsonar.projectVersion=1.0.0
-  #     -Dsonar.language=python
-  #     -Dsonar.sourceEncoding=UTF-8
-  #   depends_on:
-  #     - sonarqube
-  #   restart: "no"
 
 networks:
   pubnetwork:

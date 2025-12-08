@@ -1,0 +1,22 @@
+# Cloudflare Tunnel Configuration
+# This file configures the Cloudflare Tunnel to connect to nginx
+# Note: The token is configured via CLOUDFLARE_TUNNEL_TOKEN environment variable in .env file
+# This config file is kept for reference and can be used for additional ingress rules if needed
+
+# Method 1: Token-based authentication (configured via environment variable)
+# The token is read from CLOUDFLARE_TUNNEL_TOKEN in .env file
+# tunnel: ${CLOUDFLARE_TUNNEL_TOKEN}
+
+# Method 2: Credentials file (alternative method)
+# credentials-file: /etc/cloudflared/<tunnel-id>.json
+
+# Ingress rules - routes traffic to nginx
+# Note: When using token-based auth, ingress rules can be managed via Cloudflare Dashboard
+# or defined here. If using token, the tunnel configuration from Cloudflare Dashboard takes precedence.
+ingress:
+  # Route all traffic to nginx
+  - hostname: <YOUR_DOMAIN>
+    service: http://nginx:80
+  # Catch-all rule (must be last)
+  - service: http_status:404
+

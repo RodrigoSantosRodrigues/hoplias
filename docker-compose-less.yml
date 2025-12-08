@@ -319,9 +319,10 @@ services:
     build:
       context: .
       dockerfile: config/nginx-less.Dockerfile
-    ports:
-      - "8080:80"
-      - "8443:443"
+    # Ports removed - nginx is now only accessible via Cloudflare Tunnel
+    # ports:
+    #   - "8080:80"
+    #   - "8443:443"
     volumes:
       - ./config:/config
       - /etc/letsencrypt:/etc/letsencrypt:ro
@@ -334,6 +335,20 @@ services:
       custom_network:
         ipv4_address: 172.20.0.100
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    env_file:
+      - .env
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    depends_on:
+      - nginx
+    networks:
+      - custom_network
 
 networks:
   pubnetwork:

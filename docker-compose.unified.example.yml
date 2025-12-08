@@ -1,0 +1,69 @@
+# Example docker-compose file for unified Hoplias image
+# This is optional - the unified image can run standalone
+
+version: '3.8'
+
+services:
+  hoplias-unified:
+    image: hoplias/hoplias-v1.0.0-alpha:latest
+    container_name: hoplias-unified
+    ports:
+      - "8001:8001"  # Gateway
+      - "8003:8003"  # Segmentation
+      - "8004:8004"  # Classification
+      - "8005:8005"  # API Service
+      - "8007:8007"  # Ideogram
+      - "8080:8080"  # Nginx
+      - "6379:6379"  # Redis
+      - "5672:5672"  # RabbitMQ
+      - "15672:15672"  # RabbitMQ Management
+      - "27017:27017"  # MongoDB
+      - "9200:9200"  # Elasticsearch
+      - "9001:9001"  # Graylog
+      - "9090:9090"  # Prometheus
+      - "3000:3000"  # Grafana
+    environment:
+      # Override ports if needed
+      - GATEWAY_PORT=8001
+      - API_PORT=8005
+      - SEGMENTATION_PORT=8003
+      - CLASSIFICATION_PORT=8004
+      - IDEOGRAM_PORT=8007
+      - NGINX_PORT=8080
+      
+      # Credentials
+      - RABBIT_USER=${RABBIT_USER:-guest}
+      - RABBIT_PASSWORD=${RABBIT_PASSWORD:-guest}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - DB_USER=${DB_USER:-admin}
+      - DB_PASSWORD=${DB_PASSWORD:-root}
+      - DB_API=${DB_API:-hoplias}
+      
+      # Load from .env file
+      - ENV_FILE=/app/.env
+    env_file:
+      - .env
+    volumes:
+      # Optional: persist data
+      - hoplias-redis:/data/redis
+      - hoplias-mongodb:/data/mongodb
+      - hoplias-rabbitmq:/data/rabbitmq
+      - hoplias-elasticsearch:/data/elasticsearch
+      - hoplias-prometheus:/data/prometheus
+      - hoplias-grafana:/data/grafana
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/app/scripts/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  hoplias-redis:
+  hoplias-mongodb:
+  hoplias-rabbitmq:
+  hoplias-elasticsearch:
+  hoplias-prometheus:
+  hoplias-grafana:
+

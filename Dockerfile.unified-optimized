@@ -1,0 +1,340 @@
+# Multi-stage Dockerfile for Unified Hoplias Container
+# Optimized for size, layers, and memory usage
+
+# ============================================================================
+# Stage 1: Builder - Install build dependencies and compile binaries
+# ============================================================================
+FROM python:3.11-slim as builder
+
+WORKDIR /build
+
+# Install build dependencies
+# Make apt-get more resilient to network issues
+RUN apt-get update || true && \
+    apt-get install -y --no-install-recommends --fix-missing \
+        gcc \
+        g++ \
+        make \
+        cmake \
+        build-essential \
+        libffi-dev \
+        libssl-dev \
+        libgif-dev \
+        libaec-dev \
+        libblosc-dev \
+        libzstd-dev \
+        libsnappy-dev \
+        libglib2.0-dev \
+        gfortran \
+        libblas-dev \
+        liblapack-dev \
+        curl \
+        wget \
+        || true && \
+    rm -rf /var/lib/apt/lists/* || true
+
+# Upgrade pip
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Copy and install common Python dependencies
+COPY gateway/requirements.txt /build/gateway-requirements.txt
+COPY api-service/requirements.txt /build/api-requirements.txt
+COPY segmentation/requirements.txt /build/segmentation-requirements.txt
+COPY classification/requirements.txt /build/classification-requirements.txt
+COPY ideogram/requirements.txt /build/ideogram-requirements.txt
+
+# Install Cython first (needed for some packages)
+RUN pip install --no-cache-dir Cython>=0.29.0
+
+# Install all Python dependencies (will be copied to final stage)
+# Combine requirements to avoid duplicate installations
+RUN pip install --no-cache-dir -r /build/gateway-requirements.txt && \
+    pip install --no-cache-dir -r /build/api-requirements.txt && \
+    pip install --no-cache-dir -r /build/segmentation-requirements.txt && \
+    pip install --no-cache-dir -r /build/classification-requirements.txt && \
+    pip install --no-cache-dir -r /build/ideogram-requirements.txt && \
+    pip install --no-cache-dir supervisor watchdog && \
+    # Clean pip cache
+    pip cache purge || true
+
+# ============================================================================
+# Stage 2: Python Base - Common Python runtime
+# ============================================================================
+FROM python:3.11-slim as python-base
+
+WORKDIR /app
+
+# Install runtime dependencies only (minimal set)
+# Use minimal setup - avoid problematic OpenGL packages that cause dependency issues
+RUN apt-get update || true && \
+    # Install essential compression and image libraries
+    apt-get install -y --no-install-recommends --fix-missing \
+        libgif7 \
+        libaec0 \
+        libblosc1 \
+        libzstd1 \
+        libsnappy1v5 \
+        libglib2.0-0 \
+        libblas3 \
+        liblapack3 \
+        ca-certificates \
+        || true && \
+    # Try to install X11 libraries (optional, may fail)
+    apt-get install -y --no-install-recommends --fix-missing \
+        libsm6 \
+        libxrender1 \
+        libxext6 \
+        || true && \
+    # Fix any broken dependencies before continuing
+    apt-get install -f -y || true && \
+    rm -rf /var/lib/apt/lists/* || true && \
+    apt-get clean || true
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    OPENCV_IO_ENABLE_OPENEXR=0
+
+# Copy Python packages from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# ============================================================================
+# Stage 3: Infrastructure Services
+# ============================================================================
+FROM python-base as infra
+
+# Configure apt to be more resilient to network issues
+RUN echo 'Acquire::http::Timeout "30";' > /etc/apt/apt.conf.d/99timeout && \
+    echo 'Acquire::Retries "5";' >> /etc/apt/apt.conf.d/99timeout && \
+    echo 'Acquire::http::Pipeline-Depth "0";' >> /etc/apt/apt.conf.d/99timeout
+
+# Install common utilities and netcat for healthchecks
+RUN apt-get update || true && \
+    apt-get install -y --no-install-recommends --fix-missing \
+        netcat-openbsd \
+        curl \
+        wget \
+        gnupg \
+        ca-certificates \
+        || true && \
+    rm -rf /var/lib/apt/lists/* || true
+
+# Install Redis (lightweight) - ESSENTIAL SERVICE
+# Temporarily disable problematic security repo, install Redis, then re-enable
+RUN apt-get update || (echo "WARNING: Some repositories failed, continuing..." && true) && \
+    apt-get install -f -y || true && \
+    # Remove problematic packages that cause dependency conflicts if they exist
+    (apt-get remove -y libgl1 libgl1-mesa-dri mesa-libgallium 2>/dev/null || true) && \
+    apt-get install -f -y || true && \
+    # Try to configure partially installed packages
+    dpkg --configure -a || true && \
+    # Disable security repo temporarily if it's causing issues
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list.d/*.list 2>/dev/null || true) && \
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list 2>/dev/null || true) && \
+    # Update and install Redis (with retry)
+    (apt-get update && apt-get install -y --no-install-recommends --fix-missing libjemalloc2 liblzf1 redis-server redis-tools || \
+     (sleep 5 && apt-get update && apt-get install -y --no-install-recommends --fix-missing libjemalloc2 liblzf1 redis-server redis-tools) || \
+     (sleep 10 && apt-get update && apt-get install -y --no-install-recommends --fix-missing libjemalloc2 liblzf1 redis-server redis-tools)) && \
+    # Fix any remaining dependency issues
+    dpkg --configure -a || true && \
+    apt-get install -f -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    (which redis-server || (echo "ERROR: redis-server not installed" && exit 1))
+
+# Install RabbitMQ - ESSENTIAL SERVICE
+# Use same strategy as Redis - disable problematic repos temporarily
+RUN apt-get update || (echo "WARNING: Some repositories failed, continuing..." && true) && \
+    apt-get install -f -y || true && \
+    # Disable problematic repos temporarily if main repo fails
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list.d/*.list 2>/dev/null || true) && \
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list 2>/dev/null || true) && \
+    # Try multiple times with increasing delays
+    (for i in 1 2 3; do \
+        apt-get update && \
+        apt-get install -y --no-install-recommends --fix-missing rabbitmq-server && \
+        break || sleep $((i*5)); \
+    done) && \
+    dpkg --configure -a || true && \
+    apt-get install -f -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    (which rabbitmq-server || (echo "ERROR: rabbitmq-server not installed" && exit 1))
+
+# Install MongoDB - ESSENTIAL SERVICE
+# Use MongoDB 7.0 which is compatible with Debian Trixie (doesn't require libssl1.1)
+RUN wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg && \
+    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list && \
+    # Disable problematic repos temporarily
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list.d/*.list 2>/dev/null || true) && \
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list 2>/dev/null || true) && \
+    # Try to install MongoDB (with retry)
+    (apt-get update && apt-get install -y --no-install-recommends --fix-missing mongodb-org || \
+     (sleep 5 && apt-get update && apt-get install -y --no-install-recommends --fix-missing mongodb-org) || \
+     (sleep 10 && apt-get update && apt-get install -y --no-install-recommends --fix-missing mongodb-org)) && \
+    dpkg --configure -a || true && \
+    apt-get install -f -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    (which mongod || which /usr/bin/mongod) || (echo "ERROR: mongod not installed" && exit 1)
+
+# Install Nginx
+RUN apt-get update || (echo "WARNING: Some repositories failed, continuing..." && true) && \
+    apt-get install -f -y || true && \
+    # Disable problematic repos temporarily
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list.d/*.list 2>/dev/null || true) && \
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list 2>/dev/null || true) && \
+    # Try to install Nginx and dependencies (with retry)
+    (for i in 1 2 3; do \
+        apt-get update && \
+        apt-get install -y --no-install-recommends --fix-missing libcap2-bin nginx-common nginx && \
+        break || sleep $((i*5)); \
+    done) && \
+    dpkg --configure -a || true && \
+    apt-get install -f -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    (which nginx || (echo "ERROR: nginx not installed" && exit 1))
+
+# Install Java for Elasticsearch and Graylog (minimal) - REQUIRED for ESSENTIAL services
+# Use openjdk-21 which is available in Debian Trixie
+# Keep security repo enabled as Java packages are there
+RUN apt-get update || (echo "WARNING: Some repositories failed, continuing..." && true) && \
+    apt-get install -f -y || true && \
+    # Try to install Java 21 with multiple retries and fix missing dependencies
+    (for i in 1 2 3 4 5; do \
+        apt-get update || true && \
+        apt-get install -y --no-install-recommends --fix-missing openjdk-21-jre-headless && \
+        break || (echo "Attempt $i failed, retrying..." && sleep $((i*3))); \
+    done) && \
+    # Fix any remaining dependency issues
+    dpkg --configure -a || true && \
+    apt-get install -f -y || true && \
+    # Verify Java is installed
+    (which java || (echo "ERROR: Java not installed (required for Elasticsearch/Graylog)" && exit 1)) && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and install Prometheus (lightweight binary)
+RUN PROM_VERSION=2.45.0 && \
+    (wget -q https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz || true) && \
+    ([ -f prometheus-${PROM_VERSION}.linux-amd64.tar.gz ] && tar -xzf prometheus-${PROM_VERSION}.linux-amd64.tar.gz -C /opt || true) && \
+    ([ -d /opt/prometheus-${PROM_VERSION}.linux-amd64 ] && mv /opt/prometheus-${PROM_VERSION}.linux-amd64 /opt/prometheus || true) && \
+    rm -f prometheus-${PROM_VERSION}.linux-amd64.tar.gz || true && \
+    ([ -f /opt/prometheus/prometheus ] && chmod +x /opt/prometheus/prometheus || true)
+
+# Download and install Grafana (lightweight)
+RUN GRAFANA_VERSION=10.0.0 && \
+    (wget -q https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_amd64.deb || true) && \
+    ([ -f grafana_${GRAFANA_VERSION}_amd64.deb ] && (dpkg -i grafana_${GRAFANA_VERSION}_amd64.deb || apt-get install -f -y || true) || true) && \
+    rm -f grafana_${GRAFANA_VERSION}_amd64.deb || true
+
+# Download and install Elasticsearch (OSS version) - ESSENTIAL SERVICE
+RUN ES_VERSION=6.8.10 && \
+    wget -q https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ES_VERSION}.deb && \
+    (dpkg -i elasticsearch-oss-${ES_VERSION}.deb || apt-get install -f -y) && \
+    rm -f elasticsearch-oss-${ES_VERSION}.deb && \
+    ([ -f /usr/share/elasticsearch/bin/elasticsearch ] || [ -d /usr/share/elasticsearch ]) || (echo "ERROR: Elasticsearch not installed" && exit 1)
+
+# Download and install Graylog - ESSENTIAL SERVICE
+RUN wget -q https://packages.graylog2.org/repo/packages/graylog-4.3-repository_latest.deb && \
+    dpkg -i graylog-4.3-repository_latest.deb && \
+    # Disable problematic repos temporarily
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list.d/*.list 2>/dev/null || true) && \
+    (sed -i 's|deb.*debian-security|# deb.*debian-security|g' /etc/apt/sources.list 2>/dev/null || true) && \
+    # Try to install Graylog (with retry)
+    (apt-get update && apt-get install -y --no-install-recommends graylog-server || \
+     (sleep 5 && apt-get update && apt-get install -y --no-install-recommends graylog-server) || \
+     (sleep 10 && apt-get update && apt-get install -y --no-install-recommends graylog-server)) && \
+    dpkg --configure -a || true && \
+    apt-get install -f -y && \
+    rm -f graylog-4.3-repository_latest.deb && \
+    ([ -f /usr/share/graylog-server/bin/graylog-server ] || [ -d /usr/share/graylog-server ]) || (echo "ERROR: Graylog not installed" && exit 1)
+
+# ============================================================================
+# Stage 4: Final - Combine everything and optimize
+# ============================================================================
+FROM infra as final
+
+WORKDIR /app
+
+# Copy application code
+COPY gateway /app/gateway
+COPY api-service /app/api-service
+COPY segmentation /app/segmentation
+COPY classification /app/classification
+COPY ideogram /app/ideogram
+COPY config /app/config
+COPY prometheus.yml /app/prometheus.yml
+
+# Copy supervisor configuration
+COPY supervisor /app/supervisor
+COPY scripts /app/scripts
+
+# Create necessary directories
+RUN mkdir -p /var/log/supervisor \
+    /var/log/redis \
+    /var/log/rabbitmq \
+    /var/log/mongodb \
+    /var/log/nginx \
+    /var/log/elasticsearch \
+    /var/log/graylog \
+    /var/log/prometheus \
+    /var/log/grafana \
+    /data/redis \
+    /data/rabbitmq \
+    /data/mongodb \
+    /data/elasticsearch \
+    /data/prometheus \
+    /data/grafana
+
+# Configure services and set permissions
+RUN chmod +x /app/scripts/*.sh && \
+    chmod +x /app/supervisor/conf.d/*.conf || true && \
+    chmod +x /opt/prometheus/prometheus || true
+
+# Run optimization script
+RUN /app/scripts/optimize.sh || true
+
+# Remove unnecessary files to reduce image size
+# Fix broken dependencies first, then clean up
+RUN apt-get update || true && \
+    apt-get install -f -y || true && \
+    rm -rf /tmp/* /var/tmp/* && \
+    find /usr/share/doc -type f -delete 2>/dev/null || true && \
+    find /usr/share/man -type f -delete 2>/dev/null || true && \
+    find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en_US*' -exec rm -r {} + 2>/dev/null || true && \
+    apt-get autoremove -y || true && \
+    apt-get clean || true && \
+    rm -rf /var/lib/apt/lists/* || true
+
+# Set default environment variables
+ENV GATEWAY_PORT=8001 \
+    API_PORT=8005 \
+    SEGMENTATION_PORT=8003 \
+    CLASSIFICATION_PORT=8004 \
+    IDEOGRAM_PORT=8007 \
+    NGINX_PORT=8080 \
+    REDIS_PORT=6379 \
+    RABBITMQ_PORT=5672 \
+    RABBITMQ_MANAGEMENT_PORT=15672 \
+    MONGODB_PORT=27017 \
+    ELASTICSEARCH_PORT=9200 \
+    GRAYLOG_PORT=9001 \
+    PROMETHEUS_PORT=9090 \
+    GRAFANA_PORT=3000 \
+    RABBIT_USER=guest \
+    RABBIT_PASSWORD=guest \
+    REDIS_PASSWORD= \
+    DB_USER=admin \
+    DB_PASSWORD=root \
+    DB_API=hoplias
+
+# Expose ports
+EXPOSE 8001 8003 8004 8005 8007 8080 6379 5672 15672 27017 9200 9001 9090 3000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD /app/scripts/healthcheck.sh || exit 1
+
+# Entrypoint
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
+
