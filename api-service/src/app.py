@@ -1,3 +1,4 @@
+import inspect
 import logging
 from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
@@ -9,6 +10,21 @@ from .helpers.open_api import open_api
 from .routes import api_router
 from .infra.config import app_config, allowed_ip_host, logger
 from .infra.base.db import db
+
+DESKTOP_AND_LOCAL_ORIGINS = [
+  "https://eloquent-monstera-5ebcf7.netlify.app",
+  "http://localhost:3003",
+  "http://localhost:3000",
+  "http://127.0.0.1:3003",
+  "http://127.0.0.1:3000",
+]
+
+
+def _parse_allowed_origins(raw):
+  if not raw:
+    return []
+  cleaned = str(raw).strip().strip("'").strip('"')
+  return [part.strip().strip("'\"") for part in cleaned.split() if part.strip()]
 
 async def db_lifespan(app: FastAPI):
     # Startup
@@ -29,14 +45,6 @@ def create_app(env_name):
     lifespan=db_lifespan
   )
   logger.error(f"Starting app in {env_name} environment")
-
-  hosts = allowed_ip_host.strip().split()
-  app.add_middleware(
-    CORSMiddleware,
-    allow_origins=hosts if env_name == 'production' else ["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-  )
 
   app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
@@ -82,5 +90,30 @@ def create_app(env_name):
 
   instrumentator = Instrumentator().instrument(app)
   instrumentator.expose(app)
+
+  # CORS must be added last so it is the outermost middleware. Otherwise
+  # @app.middleware("http") can let OPTIONS hit POST routes (400/422).
+  # Electron loads the Netlify SPA; Origin is that URL even when the API
+  # is http://localhost:8005. ACAO must echo Origin, not the API host.
+  allow_origins = list(dict.fromkeys(
+    _parse_allowed_origins(allowed_ip_host) + DESKTOP_AND_LOCAL_ORIGINS
+  ))
+  cors_kwargs = {
+    "allow_origins": allow_origins if env_name == "production" else ["*"],
+    "allow_origin_regex": (
+      r"https://.*\.netlify\.app|https?://(localhost|127\.0\.0\.1)(:\d+)?"
+      if env_name == "production"
+      else None
+    ),
+    "allow_credentials": False,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+  }
+  if "allow_private_network" in inspect.signature(CORSMiddleware.__init__).parameters:
+    # Public https Origin (Netlify) → private http://localhost (Chrome PNA)
+    cors_kwargs["allow_private_network"] = True
+
+  app.add_middleware(CORSMiddleware, **cors_kwargs)
+  logger.error(f"CORS allow_origins={cors_kwargs['allow_origins']} env={env_name}")
 
   return app
