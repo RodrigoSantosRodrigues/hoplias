@@ -6,7 +6,7 @@
 
 *Hoplias - Web Toolkit For Automated Kariotype Assembly and Chromosomal Analysis*
 
-###### CDN gui status ####
+######  gui status ####
 [![Netlify Status](https://api.netlify.com/api/v1/badges/1f67827d-95c4-49a1-831d-edf5e2c2eb01/deploy-status)](https://app.netlify.com/projects/eloquent-monstera-5ebcf7/deploys)
 
 <p align="center">
